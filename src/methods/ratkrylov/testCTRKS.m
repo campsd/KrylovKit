@@ -107,14 +107,16 @@ T = eye(n+1,n);
 %% Run CTRKS
 V = zeros(size(A,1),1);
 V(:,1) = v;
-Lrot = zeros(2,0);
+Lrot = zeros(2,0); Krot = zeros(2,0);
 KR = zeros(1,0); LR = zeros(1,0);
-[ V, KR, Lrot, LR ] = CTRKS( A, B, @funcpos_generalized, @funcneg_generalized, V, KR, Lrot, LR, Xi,T);
+[ V, Krot, KR, Lrot, LR ] = CTRK( A, B, @funcpos_generalized, @funcneg_generalized, V, Krot, KR, Lrot, LR, Xi,T);
 L = LR;
+K = KR;
 for i=size(Lrot,2):-1:1
     L(i:i+1,:) = CreateRotMat(Lrot(:,i)) * L(i:i+1,:);
+    K(i:i+1,:) = CreateRotMat(Krot(:,i)) * K(i:i+1,:);
 end
-norm(A*V*KR-B*V*L,'fro')/norm(A*V*KR,'fro')
+norm(A*V*K-B*V*L,'fro')/norm(A*V*K,'fro')
 H = L/KR(1:end-1,:);
 norm(A*V(:,1:end-1)-B*V*H,'fro')/norm(A*V(:,1),'fro')
 rval = eig(KR(1:end-1,:),L(1:end-1,:));
