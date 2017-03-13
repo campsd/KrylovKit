@@ -1,0 +1,12 @@
+November 16, 2016:
+* incorporate amd ordering
+* CTIF?
+
+Obsolete(?)
+-----------
+Modularize Arnoldi chase and EK chase
+Functions:
+
+ThroughR(rot,R) ..
+ApplyToV..
+..
