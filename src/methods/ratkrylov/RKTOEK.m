@@ -1,4 +1,4 @@
-function [ V, KLrot, KLidx, KR, LR,PyRot ] = RKTOEK( V, Krot, KR, Lrot, LR, s, stop )
+function [ V, KLrot, KLidx, KR, LR ] = RKTOEK( A,B,V, Krot, KR, Lrot, LR, s, stop )
 %RKTOEK - rational krylov to extended krylov transformation
 %   This function transforms a rational Krylov pencil (V,K,L) to an
 %   extended Krylov pencil (V,K,L) by shifting the poles either to infinity
@@ -44,7 +44,7 @@ PyRot = zeros(4,0); % This will contain the "pyramid" of CTs that will be conden
 for i=1:n
     PyRot(1:2,i) = RotH(Krot(:,n-i+1));
     PyRot(3,i) = n-i+1; %row idx
-    PyRot(4,i) = 2*n - i+1 %order
+    PyRot(4,i) = 2*n - i+1; %order
     CTSV(1:2,i) = Krot(:,i);
     CTSV(3,i) = i;
 end
@@ -54,7 +54,22 @@ PyRot(1:2,n) = RotFUS(PyRot(:,n), Lrot(:,1));
 % Add remaining L rotations
 PyRot(1:2,n+1:2*n-1) = Lrot(:,2:n);
 PyRot(3,n+1:2*n-1) = 2:n;
-PyRot(4,n+1:2*n-1) = n:-1:2
+PyRot(4,n+1:2*n-1) = n:-1:2;
+
+
+% Apply the rotations to V
+Q = eye(size(KR,1));
+for i=size(CTSV,2):-1:1
+    Q(CTSV(3,i):CTSV(3,i)+1,:) = CreateRotMat(CTSV(1:2,i)) * Q(CTSV(3,i):CTSV(3,i)+1,:);
+end
+Vt = V*Q;
+
+% Test for correctness? Passes
+L = LR;
+for i=size(PyRot,2):-1:1
+    L(PyRot(3,i):PyRot(3,i)+1,:) = CreateRotMat(PyRot(1:2,i))*L(PyRot(3,i):PyRot(3,i)+1,:);
+end
+norm(A*Vt*KR-B*Vt*L,'fro')/norm(A*Vt*KR,'fro')
 
 dirswitch = 1; %keeps the idx of the row with last change in direction
 % Main loop
@@ -66,34 +81,38 @@ for i=2:n
        col_init = find(PyRot(3,:)==i,1,'first');
        ChaseRot = PyRot(1:2,col_init);
        while curr_i > dirswitch
+           % Turnover
            col_i = find(PyRot(3,:)==curr_i,1,'last');
            col_im1 = find(PyRot(3,:)==curr_i-1);
-           [PyRot(1:2,col_im1),PyRot(1:2,col_i), ChaseRot] = RotST(ChaseRot,PyRot(1:2,col_im1),PyRot(1:2,col_i));
+           [PyRot(1:2,col_im1),PyRot(1:2,col_i), ChaseRot] = RotST( ChaseRot,PyRot(1:2,col_im1),PyRot(1:2,col_i));
            curr_i = curr_i -1;
-           ShiftRotLeftToRight(curr_i);
-           ShiftRotRightToLeft(curr_i);
-           CTSV(1:2,end+1) = ChaseRot;
+           % Double transfer
+           ShiftRotLeftLToRightL(curr_i);
+           ShiftRotRightKToLeftK(curr_i);
+           % Left removal
+           CTSV(1:2,end+1) = RotH(ChaseRot);
            CTSV(3,end) = curr_i;
-           ChaseRot = RotH(ChaseRot); % !!
        end
        % Fuse CTS
        PyRot(1:2,col_im1) = RotFUS(ChaseRot, PyRot(1:2,col_im1));
        % delete the initial ChaseRot from the PyRot pattern
        PyRot(:,col_init) = [];
     else % the rightmost needs to be removed
-       if (i>2) &&  s(i-2) < 0, dirswitch = i-1; end
+       if (i>2) &&  s(i-2) > 0, dirswitch = i-1; end
        col_init = find(PyRot(3,:)==i,1,'last');
        ChaseRot = PyRot(1:2,col_init);
        while curr_i > dirswitch
+           % Turnover
            col_i = find(PyRot(3,:)==curr_i,1,'first');
            col_im1 = find(PyRot(3,:)==curr_i-1);
            [ChaseRot, PyRot(1:2,col_i),PyRot(1:2,col_im1)] = RotST(PyRot(1:2,col_i),PyRot(1:2,col_im1),ChaseRot);
            curr_i = curr_i - 1;
+           % Left removal
            CTSV(1:2,end+1) = ChaseRot;
            CTSV(3,end) = curr_i;
            ChaseRot = RotH(ChaseRot);
-           ShiftRotRightToLeft(curr_i);
-           ShiftRotLeftToRight(curr_i);
+           ShiftRotLeftKToRightK(curr_i);
+           ShiftRotRightLToLeftL(curr_i);
            ChaseRot = RotH(ChaseRot);
        end
        % Fuse CTS
@@ -103,15 +122,37 @@ for i=2:n
     end
 end
 
-% Now we need to bring the correct rotations to the K side
-
-
-KLrot = [];
-KLidx = [];
-
 % Apply the rotations to V
+Q = eye(size(KR,1));
+for i=size(CTSV,2):-1:1
+    Q(CTSV(3,i):CTSV(3,i)+1,:) = CreateRotMat(CTSV(1:2,i)) * Q(CTSV(3,i):CTSV(3,i)+1,:);
+end
+Vt = V*Q;
 
-function ShiftRotLeftToRight(i)
+% Test for correctness?
+L = LR;
+for i=size(PyRot,2):-1:1
+    L(PyRot(3,i):PyRot(3,i)+1,:) = CreateRotMat(PyRot(1:2,i))*L(PyRot(3,i):PyRot(3,i)+1,:);
+end
+norm(A*Vt*KR-B*Vt*L,'fro')/norm(A*Vt*KR,'fro')
+
+% Now we need to bring the correct rotations to the K side
+KLrot = zeros(2,size(PyRot,2));
+KLidx = zeros(1,size(PyRot,2));
+for i=1:n
+    if s(i) > 0 % CT at correct side
+        KLrot(:,i) = PyRot(1:2,i);
+        KLidx(i) = 1;
+    else % Transfer to the other side
+        ChaseRot = PyRot(1:2,i);
+        ShiftRotLeftLToRightL(i);
+        ShiftRotRightKToLeftK(i);
+        KLrot(:,i) = ChaseRot;
+        KLidx(i) = 0;
+    end
+end
+
+function ShiftRotLeftLToRightL(i)
 	% Shifts a rotation from left to right through the upper LR triangular
 	LR(i:i+1,i:n) = CreateRotMat(ChaseRot)*LR(i:i+1,i:n);
 	[cos,sin,~]=RotGIV(LR(i+1,i+1),LR(i+1,i));
@@ -119,12 +160,28 @@ function ShiftRotLeftToRight(i)
 	LR(1:i+1,i:i+1) = LR(1:i+1,i:i+1)*CreateRotMat(ChaseRot);
 end
 
-function ShiftRotRightToLeft(i)
+function ShiftRotLeftKToRightK(i)
+	% Shifts a rotation from left to right through the upper LR triangular
+	KR(i:i+1,i:n) = CreateRotMat(ChaseRot)*KR(i:i+1,i:n);
+	[cos,sin,~]=RotGIV(KR(i+1,i+1),KR(i+1,i));
+	ChaseRot = [cos,sin];
+	KR(1:i+1,i:i+1) = KR(1:i+1,i:i+1)*CreateRotMat(ChaseRot);
+end
+
+function ShiftRotRightKToLeftK(i)
 	% Shifts a rotation from right to left through the upper triangular
 	KR(1:i+1,i:i+1) = KR(1:i+1,i:i+1)*CreateRotMat(ChaseRot);
 	[cos,sin,~]=RotGIV(KR(i,i),KR(i+1,i));
 	ChaseRot = [cos,sin];
 	KR(i:i+1,i:n) = CreateRotMat(ChaseRot)*KR(i:i+1,i:n);
+end
+
+function ShiftRotRightLToLeftL(i)
+	% Shifts a rotation from right to left through the upper triangular
+	LR(1:i+1,i:i+1) = LR(1:i+1,i:i+1)*CreateRotMat(ChaseRot);
+	[cos,sin,~]=RotGIV(LR(i,i),LR(i+1,i));
+	ChaseRot = [cos,sin];
+	LR(i:i+1,i:n) = CreateRotMat(ChaseRot)*LR(i:i+1,i:n);
 end
 
 end
