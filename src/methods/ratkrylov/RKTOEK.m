@@ -142,7 +142,8 @@ for i=2:n
         else % inverse Hessenberg shape
             if (KLidx(2,k-1) < KLidx(2,k-2)) % Hessenberg shape (DIR!)
                % Turnover
-               [KLrot(:,k-1),KLrot(:,k),ChaseRot] = RotST(KLrot(:,k),KLrot(:,k-1),ChaseRot); 
+               [KLrot(:,k-1),KLrot(:,k),ChaseRot] = RotST(KLrot(:,k),KLrot(:,k-1),ChaseRot);
+               % The order of rotations has changed
                % TODO 
                %KLidx(2,1:k-1) = KLidx(2,1:k-1) + 2;
                KLidx(2,k:i) = KLidx(2,k:i) - 2;
@@ -173,7 +174,7 @@ for i=2:n
     if KLidx(2,2) < KLidx(2,1) % Hessenberg shape
         % This means that the ChaseRot is at the left side on row 2
         if s(n-i+1) >0 % we want a Hessenberg order
-            [KLrot(:,1),KLrot(:,2), ChaseRot] = RotST( ChaseRot,KLrot(:,1),KLrot(:,2));
+           [KLrot(:,1),KLrot(:,2), ChaseRot] = RotST( ChaseRot,KLrot(:,1),KLrot(:,2));
             % Double transfer
            ShiftRotLeftLToRightL(1);
            ShiftRotRightKToLeftK(1);
@@ -193,8 +194,8 @@ for i=2:n
            CTSV(3,end) = 1;
            ChaseRot = RotH(ChaseRot);
            % Double transfer
-           ShiftRotLeftKToRightK(k-1);
-           ShiftRotRightLToLeftL(k-1);
+           ShiftRotLeftKToRightK(1);
+           ShiftRotRightLToLeftL(1);
            ChaseRot = RotH(ChaseRot);
            % Fuse
            KLrot(:,1) = RotFUS(KLrot(:,1), ChaseRot);
@@ -204,6 +205,7 @@ for i=2:n
         if s(n-i+1) > 0 % we want a Hessenberg order
             % Turnover
            [KLrot(:,1),KLrot(:,2),ChaseRot] = RotST(KLrot(:,2),KLrot(:,1),ChaseRot); 
+           % The order of rotations has changed
            % TODO 
            %KLidx(2,1) = KLidx(2,1) + 2;
            KLidx(2,2:i) = KLidx(2,2:i) - 2;
