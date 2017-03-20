@@ -1,4 +1,4 @@
-function [ V, KLrot, KLidx, KR, LR ] = RKTOEK( A,B,V, Krot, KR, Lrot, LR, s, stop )
+function [ V, KLrot, KLidx, KR, LR ] = RKTOEK( A,B,V, Krot, KR, Lrot, LR, s )
 %RKTOEK - rational krylov to extended krylov transformation
 %   This function transforms a rational Krylov pencil (V,K,L) to an
 %   extended Krylov pencil (V,K,L) by shifting the poles either to infinity
@@ -23,7 +23,9 @@ function [ V, KLrot, KLidx, KR, LR ] = RKTOEK( A,B,V, Krot, KR, Lrot, LR, s, sto
 %   LR      upper triangular for L
 %
 %   NOTES
-%   Debugging: CTSV klopt zeker niet
+%   This version first moves all rotations to one side, modifies the
+%   pattern and shifts them back. The last rotation is always at the L side
+%   in this version.
 %   
 %
 %   daan.camps@cs.kuleuven.be
@@ -93,7 +95,6 @@ for i=2:n
     % chase it upwards. At the top we select on of both based on the entry
     % of s.
     col_i = find(PyInd(1,:)==i); % two results
-    %col_ip1 = find(PyInd(1,:)==i-1); % two results
         
     if ((i==2) && (s(n-1) > 0)) || ((i>2) && (KLidx(2,i-2) > KLidx(2,i-1))) % The i-2 rotation comes after the i-1 (right will be free after turnover)
         % Hessenberg
@@ -144,8 +145,6 @@ for i=2:n
                % Turnover
                [KLrot(:,k-1),KLrot(:,k),ChaseRot] = RotST(KLrot(:,k),KLrot(:,k-1),ChaseRot);
                % The order of rotations has changed
-               % TODO 
-               %KLidx(2,1:k-1) = KLidx(2,1:k-1) + 2;
                KLidx(2,k:i) = KLidx(2,k:i) - 2;
                % Double transfer
                ShiftRotLeftLToRightL(k-1);
@@ -206,8 +205,6 @@ for i=2:n
             % Turnover
            [KLrot(:,1),KLrot(:,2),ChaseRot] = RotST(KLrot(:,2),KLrot(:,1),ChaseRot); 
            % The order of rotations has changed
-           % TODO 
-           %KLidx(2,1) = KLidx(2,1) + 2;
            KLidx(2,2:i) = KLidx(2,2:i) - 2;
            % Double transfer
            ShiftRotLeftLToRightL(1);
@@ -242,31 +239,35 @@ Q = eye(size(KR,1));
 for i=size(CTSV,2):-1:1
     Q(CTSV(3,i):CTSV(3,i)+1,:) = CreateRotMat(CTSV(1:2,i)) * Q(CTSV(3,i):CTSV(3,i)+1,:);
 end
-Vt = V*Q;
+V = V*Q;
 
 L = LR;
 [~,I] = sort(KLidx(2,:));
 for i=1:size(KLrot,2)
     L(KLidx(1,I(i)):KLidx(1,I(i))+1,:) = CreateRotMat(KLrot(1:2,I(i)))*L(KLidx(1,I(i)):KLidx(1,I(i))+1,:);
 end
-norm(A*Vt*KR-B*Vt*L,'fro')/norm(A*Vt*KR,'fro')
+norm(A*V*KR-B*V*L,'fro')/norm(A*V*KR,'fro')
 % -------------------------------------------------------------------------
 
 % Now we need to bring the correct rotations to the K side
-KLrot = zeros(2,size(PyRot,2));
-KLidx = zeros(1,size(PyRot,2));
-for i=1:n
+KLidx = zeros(n,1);
+for i=1:n-1
     if s(i) > 0 % CT at correct side
-        KLrot(:,i) = PyRot(1:2,i);
+        %KLrot(:,i) = KLrot(:,i);
         KLidx(i) = 1;
     else % Transfer to the other side
-        ChaseRot = PyRot(1:2,i);
+        ChaseRot = KLrot(:,i);
         ShiftRotLeftLToRightL(i);
         ShiftRotRightKToLeftK(i);
-        KLrot(:,i) = ChaseRot;
+        KLrot(:,i) = RotH(ChaseRot);
         KLidx(i) = 0;
     end
 end
+KLidx(n) = 1;
+
+% Test again
+[K,L] = CONS_CTEK_PENCIL(KLrot,KLidx,KR,LR);
+norm(A*V*K-B*V*L,'fro')/norm(A*V*K,'fro')
 
 function ShiftRotLeftLToRightL(i)
 	% Shifts a rotation from left to right through the upper LR triangular

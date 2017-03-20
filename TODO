@@ -1,3 +1,7 @@
+March 20, 2017:
+* Version of RK to EK that acts on both sides of L and K
+* Clean up code
+
 November 16, 2016:
 * incorporate amd ordering
 * CTIF?
