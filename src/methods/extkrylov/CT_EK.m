@@ -1,4 +1,5 @@
-% CTEK - Core-Transformations factorised Extended Krylov
+function [V,KLrot,KLidx,KR,LR] = CT_EK(funpos,funneg,V,KLrot,KLidx,KR,LR,selection)
+% CT_EK - Core-Transformations factorised Extended Krylov
 %
 % INPUT
 % funpos	function that excecutes the matvec product
@@ -25,7 +26,6 @@
 % daan.camps@cs.kuleuven.be
 % September 30, 2016
 
-function [V,KLrot,KLidx,KR,LR] = CTEK(funpos,funneg,V,KLrot,KLidx,KR,LR,selection)
     % selection(i) > 0 : we use funpos
     % selection(i) < 0 : we use funneg
     	
@@ -63,21 +63,19 @@ function [V,KLrot,KLidx,KR,LR] = CTEK(funpos,funneg,V,KLrot,KLidx,KR,LR,selectio
 
         % (2) orthogonalise
         h = zeros(curr_ip1,1);
-        for kk=1:2
-            for j=1:curr_i
-                    hc = V(:,j)'*w;
-                    h(j) = h(j) + hc;
-                    w = w - hc*V(:,j);
-            end
+        for kk=1:2 % two passes to ensure orthogonal vectors
+            hc = V(:,1:curr_i)'*w;
+            h(1:curr_i) = h(1:curr_i) + hc;
+            w = w - V(:,1:curr_i)*hc;
         end
         h(curr_ip1) = norm(w,2);
 
         % (3) compute rotations and store results
         V(:,curr_ip1) = w/h(curr_ip1);
-        if selection(i) > 0, %A*v
+        if selection(i) > 0 %A*v
             %L
             for kk = plus_ops 
-                h(kk:kk+1) = CreateRotMat(RotH(KLrot(:,kk))) * h(kk:kk+1);
+                h(kk:kk+1) = CT_TO_MAT(CT_H(KLrot(:,kk))) * h(kk:kk+1);
             end
             %K
             if (curr_i>1)
@@ -105,7 +103,7 @@ function [V,KLrot,KLidx,KR,LR] = CTEK(funpos,funneg,V,KLrot,KLidx,KR,LR,selectio
             end
 
             % compute new rotation
-            [c,s,r] = RotGIV(h(curr_i),h(curr_ip1));
+            [c,s,r] = CT_GIV(h(curr_i),h(curr_ip1));
             h(curr_i:curr_ip1) = [r,0];
             LR(1:curr_ip1,curr_i) = -h;
             KLrot(:,curr_i) = [conj(c); -s]; 
@@ -115,7 +113,7 @@ function [V,KLrot,KLidx,KR,LR] = CTEK(funpos,funneg,V,KLrot,KLidx,KR,LR,selectio
         else %A\v
             %K
             for kk = min_ops 
-                h(kk:kk+1) = CreateRotMat(RotH(KLrot(:,kk))) * h(kk:kk+1);
+                h(kk:kk+1) = CT_TO_MAT(CT_H(KLrot(:,kk))) * h(kk:kk+1);
             end
             %L
             if (curr_i>1)
@@ -144,7 +142,7 @@ function [V,KLrot,KLidx,KR,LR] = CTEK(funpos,funneg,V,KLrot,KLidx,KR,LR,selectio
             end
             
             % compute new rotation
-            [c,s,r] = RotGIV(h(curr_i),h(curr_ip1));
+            [c,s,r] = CT_GIV(h(curr_i),h(curr_ip1));
             h(curr_i:curr_ip1) = [r,0];
             KR(1:curr_ip1,curr_i) = h;
             KLrot(:,curr_i) = [conj(c); -s]; 

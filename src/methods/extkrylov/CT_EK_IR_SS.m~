@@ -25,7 +25,7 @@
 % -------------------------------------------------------------------------
 % Main function
 % -------------------------------------------------------------------------
-function [V,KLrot,KLidx,KR,LR] = CTIR(V,KLrot,KLidx,KR,LR,mu)
+function [V,KLrot,KLidx,KR,LR] = CT_EK_IR_SS(V,KLrot,KLidx,KR,LR,mu)
 	
 	
 	for kk = 1:length(mu)
@@ -44,8 +44,8 @@ function [V,KLrot,KLidx,KR,LR] = CTIR(V,KLrot,KLidx,KR,LR,mu)
         % -----------------------------------------------------------------
         % Step 0
         % -----------------------------------------------------------------
-		V = ApplyRotToV(RotH(ChaRot), V, 1);
-		KLrot(:,1) = RotFUS(ChaRot, KLrot(:,1));
+		V = ApplyRotToV(CT_H(ChaRot), V, 1);
+		KLrot(:,1) = CT_FUSE(ChaRot, KLrot(:,1));
         if (KLidx(1) == 0) % First rotation at K
             if (KLidx(2) == 0) % Second rotation also at K
                 %       K       L          K     L
@@ -53,7 +53,7 @@ function [V,KLrot,KLidx,KR,LR] = CTIR(V,KLrot,KLidx,KR,LR,mu)
                 %        |                  |	
                 [ChaRot, LR] = ShiftRotLeftToRight(ChaRot, LR, 1, n-1);
                 [ChaRot, KR] = ShiftRotRightToLeft(ChaRot, KR, 1, n-1);
-                ChaRot = RotH(ChaRot) ;
+                ChaRot = CT_H(ChaRot) ;
             else % Second rotation swapped to L
                 %       K       L          K      L
                 %fused->|  cha->|    -->		  | |
@@ -63,9 +63,9 @@ function [V,KLrot,KLidx,KR,LR] = CTIR(V,KLrot,KLidx,KR,LR,mu)
                 KLrot(:,1) = tmp;
                 KLidx(1) = 1;
 
-                [ChaRot, KR] = ShiftRotLeftToRight(ChaRot, KR, 1, n-1); % RotH(ChaRot) lives at right of K, annihilated by ChaRot
+                [ChaRot, KR] = ShiftRotLeftToRight(ChaRot, KR, 1, n-1); % CT_H(ChaRot) lives at right of K, annihilated by ChaRot
                 [ChaRot, LR] = ShiftRotRightToLeft(ChaRot, LR, 1, n-1); 
-                ChaRot = RotH(ChaRot) ;
+                ChaRot = CT_H(ChaRot) ;
             end
 		elseif (KLidx(1) == 1) % First rotation at L
 			if (KLidx(2) == 1) % Second rotation also at L
@@ -74,7 +74,7 @@ function [V,KLrot,KLidx,KR,LR] = CTIR(V,KLrot,KLidx,KR,LR,mu)
 				%              |                 |
 				[ChaRot, KR] = ShiftRotLeftToRight(ChaRot, KR, 1, n-1);
 				[ChaRot, LR] = ShiftRotRightToLeft(ChaRot, LR, 1, n-1);
-                ChaRot = RotH(ChaRot) ;
+                ChaRot = CT_H(ChaRot) ;
 			else % Second rotation swapped to K
 				%        K     L          K       L
 				%   fus->|cha->|	-->	  | |
@@ -86,7 +86,7 @@ function [V,KLrot,KLidx,KR,LR] = CTIR(V,KLrot,KLidx,KR,LR,mu)
 
 				[ChaRot, LR] = ShiftRotLeftToRight(ChaRot, LR, 1, n-1);
 				[ChaRot, KR] = ShiftRotRightToLeft(ChaRot, KR, 1, n-1);
-                ChaRot = RotH(ChaRot) ;
+                ChaRot = CT_H(ChaRot) ;
 			end
         end
         
@@ -103,18 +103,18 @@ function [V,KLrot,KLidx,KR,LR] = CTIR(V,KLrot,KLidx,KR,LR,mu)
                         %	|
                         %	 |
                         %	  |
-                        [ChaRot, LR] = ShiftRotLeftToRight(RotH(ChaRot), LR, i+1, n-1);
+                        [ChaRot, LR] = ShiftRotLeftToRight(CT_H(ChaRot), LR, i+1, n-1);
                         [ChaRot, KR] = ShiftRotRightToLeft(ChaRot, KR, i+1, n-1);
-                        ChaRot = RotH(ChaRot) ;
+                        ChaRot = CT_H(ChaRot) ;
                     else % i+2nd rotation swapped to L side				
                         %	K	L
                         %	|
                         %	 |
                         %		|
-                        tmp = RotH(ChaRot);
+                        tmp = CT_H(ChaRot);
                         [ChaRot, KR] = ShiftRotLeftToRight(KLrot(:,i+1), KR, i+1, n-1);
                         [ChaRot, LR] = ShiftRotRightToLeft(ChaRot, LR, i+1, n-1);
-                        ChaRot = RotH(ChaRot) ;
+                        ChaRot = CT_H(ChaRot) ;
                         KLrot(:,i+1) = tmp;
                         KLidx(i+1) = 1;
                     end
@@ -128,18 +128,18 @@ function [V,KLrot,KLidx,KR,LR] = CTIR(V,KLrot,KLidx,KR,LR,mu)
                         %		|
                         %		 |
                         %		  |		
-                        [ChaRot, KR] = ShiftRotLeftToRight(RotH(ChaRot), KR, i+1, n-1);
+                        [ChaRot, KR] = ShiftRotLeftToRight(CT_H(ChaRot), KR, i+1, n-1);
                         [ChaRot, LR] = ShiftRotRightToLeft(ChaRot, LR, i+1, n-1);
-                        ChaRot = RotH(ChaRot) ;
+                        ChaRot = CT_H(ChaRot) ;
                     else % i+2ndrotation swapped to K side
                         %	K	L
                         %		|
                         %		 |
                         %	|
-                        tmp = RotH(ChaRot);
+                        tmp = CT_H(ChaRot);
                         [ChaRot, LR] = ShiftRotLeftToRight(KLrot(:,i+1), LR, i+1, n-1);
                         [ChaRot, KR] = ShiftRotRightToLeft(ChaRot, KR, i+1, n-1);
-                        ChaRot = RotH(ChaRot) ;
+                        ChaRot = CT_H(ChaRot) ;
                         KLrot(:,i+1) = tmp;
                         KLidx(i+1) = 0;
                     end

@@ -53,7 +53,7 @@ Function	Description				Status
 
 CT_EK		build extended Krylov			Finished (to check)
 CT_EK_IR_SS	single shift implicit restart		Finished (to check)
-CT_EK_IR_DS	double shift implicit restart		Finished (to check)
+CT_EK_IR_DS	double shift implicit restart		Finished (to check)		shift through R as nested func
 CT_EK_IR_MS	multi-shift implicit restart		Implementation ToDo
 CT_EK_PC	projected counterpart			Finished (to check)
 CT_EK_PENCIL	K,L pencil				Finished (to check)

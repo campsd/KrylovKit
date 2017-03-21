@@ -1,4 +1,4 @@
-function [ rval, res_init, err_init, res_rest, err_rest, nbRest, last_sz ] = CTIREK( funpos, funneg, v, s, m, p, l, lambda, tol, info, GEP )
+function [ rval, res_init, err_init, res_rest, err_rest, nbRest, last_sz ] = CT_IREK( funpos, funneg, v, s, m, p, l, lambda, tol, info, GEP )
 % CTIREK - Core-Transformed Implicitly Restarted Extended Krylov algorithm
 % for determining rightmost eigenvalues.
 %
@@ -82,7 +82,7 @@ function [ rval, res_init, err_init, res_rest, err_rest, nbRest, last_sz ] = CTI
         % If we performed an MV, check convergence
         if sc == 1 && i > l-1 % i larger than 1 because we check for a complex conjugate pair
             % Construct pencil
-            [K,L] = CONS_CTEK_PENCIL(KLrot, KLidx, KR, LR);
+            [K,L] = CT_EK_PENCIL(KLrot, KLidx, KR, LR);
             % Determine Ritz values and residuals
             [rval, rvec, res] = checkRitzRes(V,K,L,GEP,normA,normB,A,B);
             % Check convergence
@@ -128,7 +128,7 @@ function [ rval, res_init, err_init, res_rest, err_rest, nbRest, last_sz ] = CTI
         [shifts_s, shifts_cc, p] = detShifts(rval, p_init);
         % Apply single shifts
         if ~isempty(shifts_s)
-            if info,
+            if info
                 fprintf('--------------------------------------------\n');
                 fprintf('Removing %d real Ritz values\n',length(shifts_s));
                 fprintf('--------------------------------------------\n');
@@ -138,7 +138,7 @@ function [ rval, res_init, err_init, res_rest, err_rest, nbRest, last_sz ] = CTI
         end
         % Apply double shifts
         if ~isempty(shifts_cc)
-            if info,
+            if info
                 fprintf('--------------------------------------------\n');
                 fprintf('Removing %d pairs of complex conjugate Ritz values\n',size(shifts_cc,2));
                 fprintf('--------------------------------------------\n');
@@ -157,7 +157,7 @@ function [ rval, res_init, err_init, res_rest, err_rest, nbRest, last_sz ] = CTI
             % If we performed an MV, check convergence
             if sc == 1
                 % Construct pencil
-                [K,L] = CONS_CTEK_PENCIL(KLrot, KLidx, KR, LR);
+                [K,L] = CT_EK_PENCIL(KLrot, KLidx, KR, LR);
                 % Determine Ritz values and residuals
                 [rval, rvec, res] = checkRitzRes(V,K,L,GEP,normA,normB,A,B);
                 % Check convergence

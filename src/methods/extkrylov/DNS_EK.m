@@ -1,4 +1,5 @@
-% EK -  Extended Krylov
+function [ V,K,L ] = DNS_EK( funpos,funneg,V,K,L,selection )
+% DNS_EK -  (Dense) Extended Krylov without factorization
 %
 % INPUT
 % funpos	function that excecutes the matvec product
@@ -21,8 +22,6 @@
 % daan.camps@cs.kuleuven.be
 % September 12, 2016
 
-function [ V,K,L ] = EK( funpos,funneg,V,K,L,selection )
-
     k = length(selection);
     start_idx = size(V,2);
     
@@ -35,43 +34,35 @@ function [ V,K,L ] = EK( funpos,funneg,V,K,L,selection )
     for i=1:k
         curr_idx = start_idx + i;
         % (1) operate
-        if selection(i) > 0, %A*v
+        if selection(i) > 0 %A*v
             vec = find(diag(L,-1)<0,1,'last') + 1;
             if isempty(vec), vec = 1; end
             w = funpos(V(:,vec));
-            %w = A*V(:,lp);
         else
             vec = find(diag(K,-1)>0,1,'last') + 1;
             if isempty(vec), vec = 1;end
             w = funneg(V(:,vec));
-            %v = V(:,ln);
-            %y = mldivide(Lf,v(p));
-            %w = mldivide(Uf,y);%A\V(:,ln);
         end
 
         % (2) orthogonalise
         h = zeros(curr_idx,1);
-        for kk=1:2
-            for j=1:curr_idx-1
-                    hc = V(:,j)'*w;
-                    h(j) = h(j) + hc;
-                    w = w - hc*V(:,j);
-            end
+        for kk=1:2 % two passes to ensure orthogonal vectors
+            hc = V(:,1:curr_idx-1)'*w;
+            h(1:curr_i) = h(1:curr_idx-1) + hc;
+            w = w - V(:,1:curr_idx-1)*hc;
         end
         h(curr_idx) = norm(w,2);
 
-        % (3) compute rotations and store results
+        % (3) Store results
         V(:,curr_idx) = w/h(curr_idx);
-        if selection(i) > 0, %A*v
+        if selection(i) > 0 %A*v
             K(vec,curr_idx-1) = -1;
             L(1:curr_idx,curr_idx-1) = -h;
 
         else %A\v
             L(vec,curr_idx-1) = 1;
             K(1:curr_idx,curr_idx-1) = h; 
-
         end
     end
-
 end
 
