@@ -1,0 +1,31 @@
+global A LfacA UfacA pfacA B LfacB UfacB pfacB;
+n = 50;
+A = randn(n,n);
+B = eye(n);
+[LfacA,UfacA,pfacA] = lu(A,'vector');
+[LfacB,UfacB,pfacB] = lu(B,'vector');
+v = ones(size(A,1),1);
+v=v/norm(v);
+Xi = {[1 -1 2 1],[1 -1.5 3 1],[1 -1.25 4 1],[1 -2.5 5 1],[1 -3.5 6 1],[1 -4.5 5.5 1],[1 -4.5 4.5 1],[1 -4.5 3.5 1],[1 -4.5 2.23 1],[1 -4.5 3.42 1],[1 -4.5 1.1 1]};
+%Xi = {[1 -1 2 1],[1 -1.5 3 1],[1 -1.25 4 1]};
+T = eye(n+1,n);
+%% Run CTRKS
+V = zeros(size(A,1),1);
+V(:,1) = v;
+Lrot = zeros(2,0); Krot = zeros(2,0);
+KR = zeros(1,0); LR = zeros(1,0);
+[ V, Krot, KR, Lrot, LR ] = CTRK( A, B, @funcpos_generalized, @funcneg_generalized, V, Krot, KR, Lrot, LR, Xi,T);
+L = LR;
+K = KR;
+for i=size(Lrot,2):-1:1
+    L(i:i+1,:) = CreateRotMat(Lrot(:,i)) * L(i:i+1,:);
+    K(i:i+1,:) = CreateRotMat(Krot(:,i)) * K(i:i+1,:);
+end
+norm(A*V*K-B*V*L,'fro')/norm(A*V*K,'fro')
+
+%% Test RKTOEK
+s = [-1    -1    -1    -1     -1     -1     -1    -1     -1    -1     -1];
+%s = -ones(1,3); s(1) =1;
+[ Vek, KLrot, KLidx, KRek, LRek ] = RKTOEK( A,B,V, Krot, KR, Lrot, LR, s, true );
+[Kek,Lek] = CONS_CTEK_PENCIL(KLrot,KLidx,KRek,LRek);
+norm(A*Vek*Kek-B*Vek*Lek,'fro')/norm(A*Vek*Kek,'fro')
