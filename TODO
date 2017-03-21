@@ -1,16 +1,77 @@
+***************************************************************************************************
+		KrylovKit - ToDo and Wishlist (Planning)
+***************************************************************************************************
+
+ToDo list
+***************************************************************************************************
+
 March 20, 2017:
 * Version of RK to EK that acts on both sides of L and K
 * Clean up code
+* [V] = func(V) to ensure no copies of data are made. This is only works when func is called from within another function.
+* Deflation in restart, multiple sweeps with same shift without reducing subspace
 
 November 16, 2016:
 * incorporate amd ordering
-* CTIF?
+* CTIF
 
-Obsolete(?)
------------
-Modularize Arnoldi chase and EK chase
-Functions:
+Wishlist (Planning)
+***************************************************************************************************
 
-ThroughR(rot,R) ..
-ApplyToV..
-..
+Common
+---------------------------------------------------------------------------------------------------
+Function	Description				Status
+
+CT_GIV		compute CT from 2-vector		Rename
+CT_H		hermitian conj CT			Rename
+CT_FUSE		fuse two CTs				Rename
+CT_ST		turnover two CTs			Rename
+CT_TO_MAT	2x2 matrix representation of CT		Rename
+MATFUNC							Theory ToDo
+MATEXP							Theory ToDo
+RITZPLOT
+
+
+Standard Krylov (SK)
+---------------------------------------------------------------------------------------------------
+Function	Description				Status
+
+CT_SK		build standard Krylov -			Finished
+		core-transformed recurrence	
+CT_SK_IR_SS	single shift implicit restart		Finished (deflation)
+CT_SK_IR_DS	double shift implicit restart		Implementation ToDo
+CT_SK_IR_MS	multi-shift implicit restart		Implementation ToDo
+CT_SK_HESS	construct Hessenberg			Finished
+CT_IRSK		brings it together for SK		Implementation ToDo
+CT_SK_TO_EK	converts SK to EK			Theory ToDo (Mach et al)
+CT_SK_TO_RK	converts SK to RK			Theory ToDo (Mach et al)
+DNS_SK		dense standard Krylov (not CTed)	Implementation ToDo
+
+Extended Krylov (EK)
+---------------------------------------------------------------------------------------------------
+Function	Description				Status
+
+CT_EK		build extended Krylov			Finished (to check)
+CT_EK_IR_SS	single shift implicit restart		Finished (to check)
+CT_EK_IR_DS	double shift implicit restart		Finished (to check)
+CT_EK_IR_MS	multi-shift implicit restart		Implementation ToDo
+CT_EK_PC	projected counterpart			Finished (to check)
+CT_EK_PENCIL	K,L pencil				Finished (to check)
+CT_IREK		brings it together for EK		Finished (to check)
+CT_EK_TO_SK	converts EK to SK			Implementation ToDo
+CT_EK_TO_RK	converts EK to RK			Theory ToDo
+DNS_EK		dense extended Krylov (not CTed)	Finished (to check)
+
+Rational Krylov (RK)
+---------------------------------------------------------------------------------------------------
+Function	Description				Status
+
+CT_RK
+CT_RK_PC
+CT_RK_PENCIL
+CT_RK_SSPD
+CT_RK_TO_EK
+CT_RK_TO_SK
+DNS_RK
+
+
