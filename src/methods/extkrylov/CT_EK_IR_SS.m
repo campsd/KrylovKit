@@ -37,7 +37,7 @@ function [V,KLrot,KLidx,KR,LR] = CT_EK_IR_SS(V,KLrot,KLidx,KR,LR,mu)
 		elseif (KLidx(1) == 1) % First rotation at L (multiplication)
 			R = CT_TO_MAT(KLrot(:,1))*LR(1:2,1) - [mu(kk)*KR(1,1);0];
 		end
-		[c,s,~] = RotGIV(R(1),R(2));
+		[c,s,~] = CT_GIV(R(1),R(2));
 		ChaRot = [c;s];
 
         % -----------------------------------------------------------------
@@ -172,7 +172,7 @@ end
 function [Grot, R] = ShiftRotLeftToRight(Grot, R, i, k)
 	% Shifts a rotation from left to right through the upper triangular
 	R(i:i+1,i:k) = CT_TO_MAT(Grot)*R(i:i+1,i:k);
-	[c,s,~]=RotGIV(R(i+1,i+1),R(i+1,i));
+	[c,s,~]=CT_GIV(R(i+1,i+1),R(i+1,i));
 	Grot = [c,s];
 	R(1:i+1,i:i+1) = R(1:i+1,i:i+1)*CT_TO_MAT(Grot);
 end
@@ -180,7 +180,7 @@ end
 function [Grot, R] = ShiftRotRightToLeft(Grot, R, i, k)
 	% Shifts a rotation from right to left through the upper triangular
 	R(1:i+1,i:i+1) = R(1:i+1,i:i+1)*CT_TO_MAT(Grot);
-	[c,s,~]=RotGIV(R(i,i),R(i+1,i));
+	[c,s,~]=CT_GIV(R(i,i),R(i+1,i));
 	Grot = [c,s];
 	R(i:i+1,i:k) = CT_TO_MAT(Grot)*R(i:i+1,i:k);
 end

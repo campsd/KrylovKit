@@ -55,7 +55,7 @@ function [ V, Hrot, HR ] = CT_SK( mv, V, Hrot, HR, m )
         V(:,start_idx + i) = w / h(start_idx + i);
         % Apply previous rotations to h
         for kk=1:start_idx+i-2
-            h(kk:kk+1) = CT_TO_MAT(RotH(Hrot(:,kk))) * h(kk:kk+1);
+            h(kk:kk+1) = CT_TO_MAT(CT_H(Hrot(:,kk))) * h(kk:kk+1);
         end
         % Compute new rotation
         [c,s,r] = CT_GIV(h(start_idx+i-1),h(start_idx+i));
