@@ -25,7 +25,6 @@ function [ V, KLrot, KLidx, KR, LR ] = CT_SK_TO_EK( V, Hrot, HR, s )
 % daan.camps@cs.kuleuven.be
 
     m = length(Hrot);
-    KR = eye(m+1,m);
     CTSV = zeros(3,0);
     KLidx = zeros(m,1);
     KR = eye(m+1,m);

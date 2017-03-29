@@ -60,6 +60,7 @@ CT_EK_PENCIL	K,L pencil				Finished (to check)
 CT_IREK		brings it together for EK		Finished (to check)
 CT_EK_TO_SK	converts EK to SK			Implementation ToDo
 CT_EK_TO_RK	converts EK to RK			Theory ToDo
+CT_EK_TO_EK	changes selection vector
 DNS_EK		dense extended Krylov (not CTed)	Finished (to check)
 
 Rational Krylov (RK)

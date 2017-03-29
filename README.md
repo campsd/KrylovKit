@@ -6,6 +6,6 @@ This repository contains Matlab files to handle standard, extended and rational 
 The Matlab functions are currently still under development. The majority of the functions still need to be added, implemented or modified.
 
 ## Further information
-* [Presentation on preliminary results](https://people.cs.kuleuven.be/~daan.camps/pres/ILAS2016/ILAS.html)
+* [Presentation on preliminary results](https://campsd.github.io/pres/ILAS2016/ILAS.html)
 * Mail: *daan.camps@cs.kuleuven.be*
 
