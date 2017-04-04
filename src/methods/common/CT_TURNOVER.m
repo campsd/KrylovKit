@@ -39,7 +39,8 @@ function [G1,G2,G3]=CT_TURNOVER(H1,H2,H3,pos,tol)
 % This function performs the shift through-lemma
 % It changes slightly the order in which the rotations are computed,
 % to retain maximum accuracy.
-
+  G1 = zeros(2,1); G2 = zeros(2,1); G3 = zeros(2,1);
+  
   cH12H32=conj(H1(2))*H3(2);
   H31H11=H3(1)*H1(1);
   % explicit computed first rotation

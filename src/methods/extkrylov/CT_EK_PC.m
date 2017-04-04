@@ -56,7 +56,7 @@ for k=n-1:-1:1
     if(KLidx(k) == 1) % L rotation, apply left
          PCX2(k:k+1,:) = CT_TO_MAT(KLrot(:,k)) * PCX2(k:k+1,:);
     elseif (KLidx(k) == 0) && (k>i)% K rotation, apply H right
-         PCX2(:,k-i:k-i+1) = PCX2(:,k-i:k-i+1) * CT_TO_MAT(RotH(KLrot(:,k)));
+         PCX2(:,k-i:k-i+1) = PCX2(:,k-i:k-i+1) * CT_TO_MAT(CT_H(KLrot(:,k)));
     end
 end
 
@@ -67,7 +67,7 @@ if i > 0
     if(KLidx(i-1) ~= 1)
         k = i-1;
         while (KLidx(k) == 0)
-            PC21(1,k:k+1) = PC21(1,k:k+1) * CT_TO_MAT(RotH(KLrot(:,k)));
+            PC21(1,k:k+1) = PC21(1,k:k+1) * CT_TO_MAT(CT_H(KLrot(:,k)));
             k = k - 1; 
         end
     end

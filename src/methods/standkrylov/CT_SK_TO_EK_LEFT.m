@@ -1,9 +1,13 @@
-function [ V, KLrot, KLidx, KR, LR ] = CT_SK_TO_EK( V, Hrot, HR, s )
-%CT_SK_TO_EK  -- converts a standard Krylov recurrence to an extended
-%Krylov recurrence
+function [ V, KLrot, KLidx, KR, LR ] = CT_SK_TO_EK_LEFT( V, Hrot, HR, s )
+% [ V, KLrot, KLidx, KR, LR ] = CT_SK_TO_EK_LEFT( V, Hrot, HR, s )
+%   -- converts a standard Krylov recurrence to an extended Krylov
+%      recurrence via an initial removal from the left.
 %
 % The method is similar to the results from Mach et al. (2013) but doesn't
-% influence the residual.
+% influence the residual, it does however affect the start vector. The
+% result is that the standard Krylov subspace K_m(A,v) is transformed to an
+% extended Krylov subspace K_ext(A,\hat{v}) with a different starting
+% vector from extracted from the original subspace.
 %
 % IN
 % V     Krylov basis (N x m+1)
@@ -38,7 +42,7 @@ function [ V, KLrot, KLidx, KR, LR ] = CT_SK_TO_EK( V, Hrot, HR, s )
            for j=1:i-1
                HR(1:j+1,j:j+1) = HR(1:j+1,j:j+1) * CT_TO_MAT(Hrot(:,j));
                [cos,sin,~]=CT_GIV(HR(j,j),HR(j+1,j));
-               Grot = [cos,sin];
+               Grot = [cos;sin];
 	           HR(j:j+1,j:end) = CT_TO_MAT(Grot)*HR(j:j+1,j:end);
                Hrot(:,j) = CT_H(Grot);
            end

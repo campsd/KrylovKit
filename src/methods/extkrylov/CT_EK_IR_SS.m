@@ -173,7 +173,7 @@ function [Grot, R] = ShiftRotLeftToRight(Grot, R, i, k)
 	% Shifts a rotation from left to right through the upper triangular
 	R(i:i+1,i:k) = CT_TO_MAT(Grot)*R(i:i+1,i:k);
 	[c,s,~]=CT_GIV(R(i+1,i+1),R(i+1,i));
-	Grot = [c,s];
+	Grot = [c;s];
 	R(1:i+1,i:i+1) = R(1:i+1,i:i+1)*CT_TO_MAT(Grot);
 end
 
@@ -181,6 +181,6 @@ function [Grot, R] = ShiftRotRightToLeft(Grot, R, i, k)
 	% Shifts a rotation from right to left through the upper triangular
 	R(1:i+1,i:i+1) = R(1:i+1,i:i+1)*CT_TO_MAT(Grot);
 	[c,s,~]=CT_GIV(R(i,i),R(i+1,i));
-	Grot = [c,s];
+	Grot = [c;s];
 	R(i:i+1,i:k) = CT_TO_MAT(Grot)*R(i:i+1,i:k);
 end

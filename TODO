@@ -4,6 +4,10 @@
 
 ToDo list
 ***************************************************************************************************
+March 29, 2017
+* Enforce that single rotations are always 2x1, not 1x2
+* Update naming to CT_....
+
 
 March 20, 2017:
 * Version of RK to EK that acts on both sides of L and K

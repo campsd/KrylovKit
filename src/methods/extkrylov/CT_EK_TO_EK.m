@@ -13,8 +13,8 @@ function [ V, KLrot, KLidx, KR, LR ] = CT_EK_TO_EK( V, KLrot, KLidx, KR, LR, s )
             % the core transformation needs to be brought to the other side
             
             if s(i) == 1 %the ith core transformation needs to be brought from K to L
-                CTSV = [CTSV [KLrot(:,(KLidx(1:i)==0)); find(KLidx(1:i)==0)']];
-                KLrot(:,i) = CT_H(KLrot(:,i));
+                CTSV = [CTSV [KLrot(:,(KLidx(1:i)==0)); find(KLidx(1:i)==0)]];
+                KLrot(:,(KLidx(1:i)==0)) = CT_H(KLrot(:,(KLidx(1:i)==0)));
                 KLidx(i) = 1;
                 % bring the original rotations at L side through L,K such 
                 % that we get the correct order again
@@ -23,7 +23,7 @@ function [ V, KLrot, KLidx, KR, LR ] = CT_EK_TO_EK( V, KLrot, KLidx, KR, LR, s )
                         Grot = KLrot(:,j);
                         ShiftRotLeftLToRightL(j)
                         ShiftRotRightKToLeftK(j)
-                        CTSV = [CTSV [CT_H(Grot); j]]; % CT_H maybe vice versa
+                        CTSV = [CTSV [CT_H(Grot); j]];
                         KLrot(:,j) = Grot;
                     end
                 end
@@ -38,8 +38,8 @@ function [ V, KLrot, KLidx, KR, LR ] = CT_EK_TO_EK( V, KLrot, KLidx, KR, LR, s )
                     end
                 end
             else %the ith core transformation needs to be brought from L to K
-                CTSV = [CTSV [KLrot(:,(KLidx(1:i)==1)); find(KLidx(1:i)==1)']];
-                KLrot(:,i) = CT_H(KLrot(:,i));
+                CTSV = [CTSV [KLrot(:,(KLidx(1:i)==1)); find(KLidx(1:i)==1)]];
+                KLrot(:,(KLidx(1:i)==1)) = CT_H(KLrot(:,(KLidx(1:i)==1)));
                 KLidx(i) = 0;
                 % bring the original rotations at K side through K,L such 
                 % that we get the correct order again
@@ -48,7 +48,7 @@ function [ V, KLrot, KLidx, KR, LR ] = CT_EK_TO_EK( V, KLrot, KLidx, KR, LR, s )
                         Grot = KLrot(:,j);
                         ShiftRotLeftKToRightK(j)
                         ShiftRotRightLToLeftL(j)
-                        CTSV = [CTSV [CT_H(Grot); j]]; % CT_H maybe vice versa
+                        CTSV = [CTSV [CT_H(Grot); j]]; 
                         KLrot(:,j) = Grot;
                     end
                 end
@@ -79,7 +79,7 @@ function ShiftRotLeftLToRightL(i)
 % 	% Shifts a rotation from left to right through the upper LR triangular
 	LR(i:i+1,i:m) = CT_TO_MAT(Grot)*LR(i:i+1,i:m);
 	[cos,sin,~]=CT_GIV(LR(i+1,i+1),LR(i+1,i));
-	Grot = [cos,sin];
+	Grot = [cos;sin];
 	LR(1:i+1,i:i+1) = LR(1:i+1,i:i+1)*CT_TO_MAT(Grot);
 end
 
@@ -87,7 +87,7 @@ function ShiftRotLeftKToRightK(i)
 	% Shifts a rotation from left to right through the upper LR triangular
 	KR(i:i+1,i:m) = CT_TO_MAT(Grot)*KR(i:i+1,i:m);
 	[cos,sin,~]=CT_GIV(KR(i+1,i+1),KR(i+1,i));
-	Grot = [cos,sin];
+	Grot = [cos;sin];
 	KR(1:i+1,i:i+1) = KR(1:i+1,i:i+1)*CT_TO_MAT(Grot);
 end
 
@@ -95,7 +95,7 @@ function ShiftRotRightKToLeftK(i)
 	% Shifts a rotation from right to left through the upper triangular
 	KR(1:i+1,i:i+1) = KR(1:i+1,i:i+1)*CT_TO_MAT(Grot);
 	[cos,sin,~]=CT_GIV(KR(i,i),KR(i+1,i));
-	Grot = [cos,sin];
+	Grot = [cos;sin];
 	KR(i:i+1,i:m) = CT_TO_MAT(Grot)*KR(i:i+1,i:m);
 end
 
@@ -103,7 +103,7 @@ function ShiftRotRightLToLeftL(i)
 	% Shifts a rotation from right to left through the upper triangular
 	LR(1:i+1,i:i+1) = LR(1:i+1,i:i+1)*CT_TO_MAT(Grot);
 	[cos,sin,~]=CT_GIV(LR(i,i),LR(i+1,i));
-	Grot = [cos,sin];
+	Grot = [cos;sin];
 	LR(i:i+1,i:m) = CT_TO_MAT(Grot)*LR(i:i+1,i:m);
 end
 
