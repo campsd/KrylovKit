@@ -55,7 +55,7 @@ function [ V, Hrot, Hrow, HR ] = CT_SK_BLK( mv, V, Hrot, Hrow, HR, bs, m )
        % Check for breakdown
        if min(svd(Ht(end-bs+1:end,:))) < tol
            warning('breakdown of block-Krylov process, halted early');
-           % handle arrays TODO
+           % handle arrays
            break
        end
        
@@ -83,6 +83,9 @@ function [ V, Hrot, Hrow, HR ] = CT_SK_BLK( mv, V, Hrot, Hrow, HR, bs, m )
        
        Hrot(:,:,start_blck + i-1) = RhombRot;
        Hrow(:,:,start_blck + i-1) = RhombRow;
+       
+       %Hrot = cat(3,Hrot,RhombRot);
+       %Hrow = cat(3,Hrow,RhombRow);
     end
 end
 

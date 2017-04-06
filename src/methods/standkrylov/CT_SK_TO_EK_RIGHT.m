@@ -8,6 +8,7 @@ function [ V, KLrot, KLidx, KR, LR, r, em ] = CT_SK_TO_EK_RIGHT( V, Hrot, HR, s 
 % rotation is always left at L (=> we ignore s(1)). The last rotation is
 % applied to HR to extract the residual (=> we ignore s(m)).
 
+% TODO -> don't ignore s(1). This doesn't influence the start vector!
     m = size(Hrot,2);
     CTSV = zeros(3,0);
     CTSW = zeros(3,0);
