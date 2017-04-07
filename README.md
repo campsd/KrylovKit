@@ -3,11 +3,13 @@ This repository contains Matlab files to handle standard, extended and rational 
 
 In the standard Krylov algorithms, the Krylov subspace is constructed with Arnoldi's method which orthogonalizes vectors computed from the matrix-vector product with matrix A and the Arnoldi recurrence holds:
 > A \* V<sub>i</sub> = V<sub>i+1</sub> \* <u>H</u><sub>i</sub>.
-The columns of V<sub>i+1</sub> span K<sub>i+1</sub>(A,v) = span(v, A\*v, A<sup>2</sup>\*v, ..., A<sup>i</sup>\*v). The matrix <u>H</u><sub>i</sub> is an i+1 x i unreduced, upper Hessenberg matrix which admits a QR factorisation with a condensed, descending pattern of *core transformations*. Core transformations are 2 x 2 matrices used to introduce zeroes in a matrix, all core transformations used here are unitary.
+
+The columns of V<sub>i+1</sub> span K<sub>i+1</sub>(A,v) = span(v, A v, A<sup>2</sup> v, ..., A<sup>i</sup> v). The matrix <u>H</u><sub>i</sub> is an i+1 x i unreduced, upper Hessenberg matrix which admits a QR factorisation with a condensed, descending pattern of *core transformations*. Core transformations are 2 x 2 matrices used to introduce zeroes in a matrix, all core transformations used here are unitary.
 
 In the extended Krylov algorithm, the Krylov subspace is enriched by also including vectors computed by solving systems with A (A\\v). We can interpret this as adding *negative powers of A* to the subspace. The recurrence that holds in the extended Krylov algorithms is:
 > A \* V<sub>i+1</sub> * <u>K</u><sub>i</sub> = V<sub>i+1</sub> \* <u>L</u><sub>i</sub>.
-In this case the columns of V<sub>i+1</sub> span K<sup>ext</sup><sub>p,n</sub>(A,v) = span(v, A\*v, A<sup>-1</sup>\*v, A<sup>-2</sup>\*v, ..., A<sup>p</sup>\*v, A<sup>-n</sup>\*v)
+
+In this case the columns of V<sub>i+1</sub> span K<sup>ext</sup><sub>p,n</sub>(A,v) = span(v, A v, A<sup>-1</sup> v, A<sup>-2</sup> v, ..., A<sup>p</sup> v, A<sup>-n</sup> v)
 
 ## List of abbreviations
 The funtion names make use of the following abbreviations in their naming convention:
