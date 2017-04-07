@@ -1,15 +1,19 @@
 # KrylovKit
 This repository contains Matlab files to handle standard, extended and rational Krylov sequences by operating on QR factorized representations of the recurrence matrices. This representation allows for a straightforward transition between the three different types of Krylov recurrences and leads to a unified approach for the implicit restart of the iteration. Some code to handle block-Krylov iterations is also available.
 
+## Standard Krylov
 In the standard Krylov algorithms, the Krylov subspace is constructed with Arnoldi's method which orthogonalizes vectors computed from the matrix-vector product with matrix A and the Arnoldi recurrence holds:
-> A \* V<sub>i</sub> = V<sub>i+1</sub> \* <u>H</u><sub>i</sub>.
+> A \* V<sub>i</sub> = V<sub>i+1</sub> \* __H__<sub>i</sub>.
 
 The columns of V<sub>i+1</sub> span K<sub>i+1</sub>(A,v) = span(v, A v, A<sup>2</sup> v, ..., A<sup>i</sup> v). The matrix <u>H</u><sub>i</sub> is an i+1 x i unreduced, upper Hessenberg matrix which admits a QR factorisation with a condensed, descending pattern of *core transformations*. Core transformations are 2 x 2 matrices used to introduce zeroes in a matrix, all core transformations used here are unitary.
 
+## Extended Krylov
 In the extended Krylov algorithm, the Krylov subspace is enriched by also including vectors computed by solving systems with A (A\\v). We can interpret this as adding *negative powers of A* to the subspace. The recurrence that holds in the extended Krylov algorithms is:
 > A \* V<sub>i+1</sub> * <u>K</u><sub>i</sub> = V<sub>i+1</sub> \* <u>L</u><sub>i</sub>.
 
-In this case the columns of V<sub>i+1</sub> span K<sup>ext</sup><sub>p,n</sub>(A,v) = span(v, A v, A<sup>-1</sup> v, A<sup>-2</sup> v, ..., A<sup>p</sup> v, A<sup>-n</sup> v)
+In this case the columns of V<sub>i+1</sub> span K<sup>ext</sup><sub>p,n</sub>(A,v) = span(v, A v, A<sup>-1</sup> v, A<sup>-2</sup> v, ..., A<sup>p</sup> v, A<sup>-n</sup> v), i = p + n. The order in which positive and negative powers are added to the subspace in the algorithms is determined by the selection vector *s*.
+
+
 
 ## List of abbreviations
 The funtion names make use of the following abbreviations in their naming convention:
