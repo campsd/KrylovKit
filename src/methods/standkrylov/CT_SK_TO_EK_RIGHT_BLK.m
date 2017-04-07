@@ -66,6 +66,9 @@ for i=1:m-1
         for j=i+1:m
             Hrot(:,:,j) = CT_H(Hrot(:,:,j));
         end
+        % reverse order in i block
+        Hrot(:,:,i) = fliplr(Hrot(:,:,i));
+        Hrow(:,:,i) = fliplr(Hrow(:,:,i));
     end
 end
 
