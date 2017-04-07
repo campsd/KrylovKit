@@ -6,7 +6,6 @@ function [ V, KLrot, KLrow, KLidx, KR, LR, F, E ] = CT_SK_TO_EK_RIGHT_BLK( V, Hr
 % This algorithm is based on the work form Mach et al. (2014) on
 % approximate rational Krylov methods.
 
-% WORK IN PROGRESS -- STILL AN ERROR IN THE ALGORITHM
 m = size(Hrot,3); %nb of blocks
 CTSV = zeros(3,0);
 CTSW = zeros(3,0);
@@ -27,11 +26,11 @@ Hrot(:,:,m) = -1; Hrow(:,:,m) = -1;
 cnt = 1;
 for j=1:bs-1
    for k=bs-j:-1:1
-       [cos,sin,r] = CT_GIV(HR(k+(m-1)*bs,j+(m-1)*bs),HR(k+(m-1)*bs+1,j+(m-1)*bs));
-       HR(k+(m-1)*bs,j+(m-1)*bs) = r; HR(k+(m-1)*bs+1,j+(m-1)*bs) = 0;
-       HR(k+(m-1)*bs:k+(m-1)*bs+1,j+(m-1)*bs+1:m*bs) = CT_TO_MAT([cos;sin]) * HR(k+(m-1)*bs:k+(m-1)*bs+1,j+(m-1)*bs+1:m*bs);
+       [cos,sin,r] = CT_GIV(HR(j+k+(m-1)*bs-1,j+(m-1)*bs),HR(j+k+(m-1)*bs,j+(m-1)*bs));
+       HR(j+k+(m-1)*bs-1,j+(m-1)*bs) = r; HR(j+k+(m-1)*bs,j+(m-1)*bs) = 0;
+       HR(j+k+(m-1)*bs-1:j+k+(m-1)*bs,j+(m-1)*bs+1:m*bs) = CT_TO_MAT([cos;sin]) * HR(j+k+(m-1)*bs-1:j+k+(m-1)*bs,j+(m-1)*bs+1:m*bs);
        Hrot(:,cnt,m) = [conj(cos); -sin];
-       Hrow(1,cnt,m) = k+(m-1)*bs;
+       Hrow(1,cnt,m) = j+k+(m-1)*bs-1;
        cnt = cnt + 1;
    end
 end
