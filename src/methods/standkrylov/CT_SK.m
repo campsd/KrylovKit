@@ -1,22 +1,31 @@
 function [ V, Hrot, HR ] = CT_SK( mv, V, Hrot, HR, m )
-%CT_SK -- Core transformed Standard Krylov
+%[ V, Hrot, HR ] = CT_SK( mv, V, Hrot, HR, m ) 
+%-- Core transformed Standard Krylov iteration
 % 
 % INPUT
 % mv    handle to function that computes the matrix vector product
-% V     Krylov basis to start from
-% Hrot  rotations from upper Hessenberg matrix
-% HR    upper triangular from upper Hessenberg matrix
-% m     number of steps to compute
+% V     Krylov basis to start from (N x k+1)
+%	for initial run: V contains start vector of norm 1
+% Hrot  Core transformations for upper Hessenberg matrix (2xk)
+%	for initial run: Hrot is 2x0 empty array
+% HR    upper triangular for upper Hessenberg matrix (k+1 x k)
+%	for initial run: HR is 1x0 empty array
+% m     number of steps to take
 %
 % OUTPUT
-% V     enlarged Krylov basis with m additional vectors
-% Hrot  rotations from upper Hessenberg matrix
-% HR    upper triangular
+% V     enlarged Krylov basis with m additional vectors (N x k+m+1)
+% Hrot  rotations for upper Hessenberg matrix (2 x k+m)
+% HR    upper triangular for upper Hessenberg matrix (k+m+1 x k+m)
 %
-% Recursion: A*V(:,1:end-1) = V*H
+% Throughout the algorithm the recursion
+%	 A*V(:,1:end-1) = V*H
+% holds, with H = mat(Hrot) * HR.
 %
 % daan.camps@cs.kuleuven.be
-% March 21, 2017
+% last edit: April 10, 2017
+%
+% See also: CT_SK_HESS, CT_SK_TO_EK_LEFT, CT_SK_TO_EK_RIGHT,
+% CT_SK_IR_SS
     tol = 1e-14; %breakdown tolerance
     start_idx = size(V,2);
     % ensure startvec is normalized

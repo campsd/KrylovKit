@@ -4,11 +4,43 @@ function [ V, KLrot, KLidx, KR, LR, r, em ] = CT_SK_TO_EK_RIGHT( V, Hrot, HR, s 
 %   recurrence via an initial removal from the right.
 %
 % This is the method from Mach et al. (2013). It transforms a standard
-% Krylov subspace to an approximate extended Krylov subspace. The first
-% rotation is always left at L (=> we ignore s(1)). The last rotation is
-% applied to HR to extract the residual (=> we ignore s(m)).
-
-% TODO -> don't ignore s(1). This doesn't influence the start vector!
+% Krylov subspace K_m(A,v) to an approximate extended Krylov subspace 
+% K_ext(A,v) with the same start vector, but the residual is affected 
+% which makes that the result approximate. The error can be checked by
+% inspecting the residual.
+%
+% INPUT
+% V		Krylov basis (N x m+1)	
+% Hrot		Core transformations upper Hessenberg (m)
+% HR		Upper triangular from upper Hessenberg (m+1 x m)
+% s		selection vector to which the recurrence should be
+%		transformed 0:move to K - 1:stay at L) (m)
+% Recurrence that holds: 
+%	A * V(:,1:end-1) = V * mat(Hrot) * HR
+%
+% OUTPUT
+% V		adjusted extended Krylov basis (N x m)
+% KLrot		adjusted Core transformations L,K pencil (m-1)
+% KLidx		indicates side on which core transformation acts 
+%		(0 = K // 1 = L) (m-1)
+% KR		upper triangular Hessenberg K (m x m)
+% LR		upper triangular Hessenberg L (m x m)
+% r		residual vector (N x 1)
+% em		adjusted mth canonical vector (1 x m)
+% Recurrence that holds: 
+% 	A * V * mat(KLrot(KLidx==0)) * KR = 
+%	V * mat(KLrot(KLidx==1)) * LR + r * em
+%
+% Before the transformation, em is the mth canonical basis vector.
+% During the transformation, core transformations are applied to em which
+% pushes the energy to the front. The approximate extended Krylov will be 
+% accurate when the recurrence is cut-off at a point where the elements of 
+% em are still small. For more details, consult Mach et al. (2013)
+%
+% daan.camps@cs.kuleuven.be
+% last edit: April 10,2017
+%
+% See also: CT_SK, CT_EK, CT_SK_TO_EK_LEFT, CT_EK_PENCIL
     m = size(Hrot,2);
     CTSV = zeros(3,0);
     CTSW = zeros(3,0);
@@ -21,7 +53,7 @@ function [ V, KLrot, KLidx, KR, LR, r, em ] = CT_SK_TO_EK_RIGHT( V, Hrot, HR, s 
     HR(m+1,:) = []; V(:,m+1) = []; Hrot(:,m) = [];
     
     % Now we modify the square part of H
-    for i=2:m-1
+    for i=1:m-1
         if s(i) == 1 % stay at L
             %KLidx(i) = 1;
         else % move to K

@@ -1,11 +1,45 @@
 function [ V, KLrot, KLrow, KLidx, KR, LR, F, E ] = CT_SK_TO_EK_RIGHT_BLK( V, Hrot, Hrow, HR, bs, s )
 %[ V, KLrot, KLrow, KR, LR, F, E ] = CT_SK_TO_EK_RIGHT_BLK( V, Hrot, Hrow, HR, bs, s )
-% -- converts a standard block-Krylov recurrence to an extended block
-% Krylov recurrence via an initial removal from the right.
+% -- converts a standard block-Krylov recurrence to an extended block- Krylov 
+% recurrence via an initial removal from the right.
 %
 % This algorithm is based on the work form Mach et al. (2014) on
-% approximate rational Krylov methods.
-
+% approximate rational block-Krylov methods.
+%
+% INPUT
+% V	standard block-Krylov basis (N x (m+1)*bs)
+% Hrot	core transformations banded Hessenberg, stored per rhomb (2 x bs^2 x m)
+% Hrow  row indices core transformations (1 x bs^2 x m)
+% HR 	upper triangular banded upper Hessenberg
+% bs	blocksize of block-Krylov subspace
+% s	selection vector to which the subspace needs to be transformed
+% Recurrence that holds:
+%	A * V(:,1:end-bs) = V * mat(Hrot) * HR
+%
+% OUTPUT
+% V	approximate extended block-Krylov basis (N x m*bs)
+% KLrot	core transformations banded Hessenberg pencil, stored per rhomb (2x bs^2 x m-1)
+% KLrow row indices core transformations (1 x bs^2 x m-1)
+% KLidx indicates side on which rhomb of core transformations acts
+%	(0 = K // 1 = L) (m-1)
+% KR	upper triangular Hessenberg K (m*bs x m*bs)
+% LR	upper triangular Hessenberg L (m*bs x m*bs)
+% F	residual vectors (N x bs)
+% E	adjusted mth canonical vectors (bs x m)
+% Recurrence that holds:
+%	A * V * mat(KLrot(KLidx==0)) * KR = 
+%	V * mat(KLrot(KLidx==1)) * LR + F * E
+%
+% Before the transformation, E contains canonical basis vectors.
+% During the transformation, core transformations are applied to E, which
+% push the energy in the vectors to the front. The approximate extended
+% block-Krylov subspace will be accurate if it is extracted at a point where
+% all elements of E are still small.
+%
+% daan.camps@cs.kuleuven.be
+% last edit: April 10, 2017
+%
+% See also: CT_SK_BLK, CT_EK_PENCIL_BLK, CT_SK_HESS_BLK
 m = size(Hrot,3); %nb of blocks
 CTSV = zeros(3,0);
 CTSW = zeros(3,0);

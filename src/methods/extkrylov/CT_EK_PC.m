@@ -1,5 +1,7 @@
 function [ PC ] = CT_EK_PC( KLrot, KLidx, KR, LR, PC )
-% CT_EK_PC - Core Transformed Projected Counterpart
+% [ PC ] = CT_EK_PC( KLrot, KLidx, KR, LR, PC )
+% -- Core Transformed Projected Counterpart for extened Krylov
+%
 % Computes and updates the projected counterpart of the extended Krylov
 % iteration in an iterative fashion.
 %
@@ -15,8 +17,10 @@ function [ PC ] = CT_EK_PC( KLrot, KLidx, KR, LR, PC )
 % OUTPUT
 % PC        Updated PC
 %
-% November 16, 2016
 % daan.camps@cs.kuleuven.be
+% last edit: November 16, 2016
+%
+% See also: CT_EK, CT_EK_PENCIL
 
 assert(KLidx(end)==1,'Last CT not at L!');
 

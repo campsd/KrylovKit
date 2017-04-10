@@ -7,27 +7,32 @@ function [ V, KLrot, KLidx, KR, LR ] = CT_SK_TO_EK_LEFT( V, Hrot, HR, s )
 % influence the residual, it does however affect the start vector. The
 % result is that the standard Krylov subspace K_m(A,v) is transformed to an
 % extended Krylov subspace K_ext(A,\hat{v}) with a different starting
-% vector from extracted from the original subspace.
+% vector extracted from the original subspace.
 %
-% IN
+% INPUT
 % V     Krylov basis (N x m+1)
 % Hrot  Core transformations upper Hessenberg (m)
 % HR    Upper triangular (m+1 x m)
 % s     selection vector to which the recurrence should be transformed
-%       (0:to K - 1:stay at L) (m)
-% Recurrence that holds: A * V(:,1:end-1) = V * mat(Hrot) * HR
+%       (0:move to K - 1:stay at L) (m)
+% Recurrence that holds: 
+%	A * V(:,1:end-1) = V * mat(Hrot) * HR
 %
-% OUT
-% V     adjusted Krylov basis
-% KLrot adjusted Core transformations pencil
+% OUTPUT
+% V     adjusted extended Krylov basis (N x m+1)
+% KLrot adjusted Core transformations L,K pencil (m)
 % KLidx indicates side of core transformations
-% KR    upper triangular K
-% LR    upper triangular L
-% Recurrence that holds: A * V * mat(KLrot(KLidx==0)) * KR = V * mat(KLrot(KLidx==1)) * LR 
+%	(0 = K // 1 = L) (m)
+% KR    upper triangular Hessenberg K (m+1 x m)
+% LR    upper triangular Hessenberg L (m+1 x m)
+% Recurrence that holds: 
+% 	A * V * mat(KLrot(KLidx==0)) * KR = 
+%	V * mat(KLrot(KLidx==1)) * LR 
 %
-% March 22, 2017
 % daan.camps@cs.kuleuven.be
-
+% last edit: April 10, 2017 
+%
+% See also: CT_SK, CT_EK, CT_SK_TO_EK_RIGHT, CT_EK_PENCIL
     m = length(Hrot);
     CTSV = zeros(3,0);
     KLidx = zeros(m,1);

@@ -1,5 +1,6 @@
 function [V,KLrot,KLidx,KR,LR] = CT_EK_IR_SS(V,KLrot,KLidx,KR,LR,mu)
-% CT_EK_IR_SS - Core-Transformations Implicit Restart for Extended Krylov
+%[V,KLrot,KLidx,KR,LR] = CT_EK_IR_SS(V,KLrot,KLidx,KR,LR,mu) 
+%-- Core-Transformations Implicit Restart for Extended Krylov
 %
 % INPUT
 % V      Krylov Basis
@@ -21,12 +22,9 @@ function [V,KLrot,KLidx,KR,LR] = CT_EK_IR_SS(V,KLrot,KLidx,KR,LR,mu)
 %
 %
 % daan.camps@cs.kuleuven.be
-% September 30, 2016
-
-% -------------------------------------------------------------------------
-% Main function
-% -------------------------------------------------------------------------	
-	
+% last edit: September 30, 2016
+%
+% See also: CT_EK, CT_EK_IR_DS
 	for kk = 1:length(mu)
 		n = size(KR,1);
         % -----------------------------------------------------------------

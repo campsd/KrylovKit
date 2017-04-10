@@ -1,5 +1,6 @@
 function [V,KLrot,KLidx,KR,LR] = CT_EK(funpos,funneg,V,KLrot,KLidx,KR,LR,selection)
-% CT_EK - Core-Transformations factorised Extended Krylov
+% [V,KLrot,KLidx,KR,LR] = CT_EK(funpos,funneg,V,KLrot,KLidx,KR,LR,selection) 
+% -- Core-Transformations factorised Extended Krylov
 %
 % INPUT
 % funpos	function that excecutes the matvec product
@@ -22,9 +23,11 @@ function [V,KLrot,KLidx,KR,LR] = CT_EK(funpos,funneg,V,KLrot,KLidx,KR,LR,selecti
 % The recursion relation that holds before and after the restart is:
 %       A*V*K = V*L
 %
-%
 % daan.camps@cs.kuleuven.be
-% September 30, 2016
+% last edit: September 30, 2016
+%
+% See also: CT_SK, CT_EK_PENCIL, CT_EK_IR_SS, CT_EK_IR_DS, CT_EK_PC,
+% CT_EK_TO_EK
 
     % selection(i) > 0 : we use funpos
     % selection(i) < 0 : we use funneg

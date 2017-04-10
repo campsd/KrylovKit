@@ -1,10 +1,29 @@
-function [ V, KLrot, KLidx, KR, LR ] = CT_EK_TO_EK( V, KLrot, KLidx, KR, LR, s )
-%CT_EK_TO_EK -- converts the selection vector of an EK recurrence to
-%another selection vector
+function [ V, KLrot, KLidx, KR, LR ] = CT_EK_TO_EK_LEFT( V, KLrot, KLidx, KR, LR, s )
+%[ V, KLrot, KLidx, KR, LR ] = CT_EK_TO_EK_LEFT( V, KLrot, KLidx, KR, LR, s ) 
+%-- converts the selection vector of an EK recurrence to another selection vector
+%by transforming the recurrence from the left
 %
-% March 28, 2017
-
-% work in progress
+% INPUT
+% V	extended Krylov basis (V x m+1)
+% KLrot	core transformations L,K pencil (2xm)
+% KLidx	indicates side of core transformations
+%	(0 = K // 1 = L) (m)
+% KR	upper triangular Hessenberg K (m+1 x m)
+% LR	upper triangular Hessenberg L (m+1 x m)
+% s	desired selection vector (m)
+%
+% OUTPUT
+% V	extended Krylov basis (V x m+1)
+% KLrot	core transformations L,K pencil (2xm)
+% KLidx	indicates side of core transformations
+%	(0 = K // 1 = L) (m) -> is now in agreement with s
+% KR	upper triangular Hessenberg K (m+1 x m)
+% LR	upper triangular Hessenberg L (m+1 x m)
+%
+% daan.camps@cs.kuleuven.be
+% last edit: April 10, 2017
+%
+% See also: CT_EK, CT_SK_TO_EK_LEFT, CT_SK_TO_EK_RIGHT
     m = length(KLrot);
     CTSV = zeros(3,0);
     

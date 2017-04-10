@@ -38,18 +38,25 @@ RITZPLOT
 
 Standard Krylov (SK)
 ---------------------------------------------------------------------------------------------------
-Function	Description				Status
+Function		Description				Status
 
-CT_SK		build standard Krylov -			Finished
-		core-transformed recurrence	
-CT_SK_IR_SS	single shift implicit restart		Finished (deflation)
-CT_SK_IR_DS	double shift implicit restart		Implementation ToDo
-CT_SK_IR_MS	multi-shift implicit restart		Implementation ToDo
-CT_SK_HESS	construct Hessenberg			Finished
-CT_IRSK		brings it together for SK		Implementation ToDo
-CT_SK_TO_EK	converts SK to EK			Theory ToDo (Mach et al)
-CT_SK_TO_RK	converts SK to RK			Theory ToDo (Mach et al)
-DNS_SK		dense standard Krylov (not CTed)	Implementation ToDo
+CT_SK			build standard Krylov -			Finished
+			core-transformed recurrence	
+CT_SK_BLK		standard block-Krylov, banded		Finished
+			Hessenberg CTed	
+CT_SK_IR_SS		single shift implicit restart		Finished (deflation)
+CT_SK_IR_DS		double shift implicit restart		Implementation ToDo
+CT_SK_IR_MS		multi-shift implicit restart		Implementation ToDo
+CT_SK_HESS		construct Hessenberg			Finished
+CT_SK_HESS_BLK		construct banded Hess from blk-Krylov	Finished
+CT_IRSK			brings it together for SK		Implementation ToDo
+CT_SK_TO_EK_LEFT	converts SK to EK (via LEFT)		Finished
+CT_SK_TO_EK_RIGHT	converts SK to EK (via RIGHT)		Finished (Mach et al)
+CT_SK_TO_EK_RIGHT_BLK	converts block-SK to block-EK (via	Finished
+			RIGHT)
+CT_SK_TO_RK		converts SK to RK			ToDo (Mach et al)
+DNS_SK			dense standard Krylov (not CTed)	Finished
+DNS_SK_BLK		dense standard block-Krylov		Finished
 
 Extended Krylov (EK)
 ---------------------------------------------------------------------------------------------------

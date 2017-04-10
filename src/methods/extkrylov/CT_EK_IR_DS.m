@@ -1,5 +1,6 @@
 function [V,KLrot,KLidx,KR,LR] = CT_EK_IR_DS(V,KLrot,KLidx,KR,LR,mu)
-% CT_EK_IR_DS -- Double Shift Core-Transformations Implicit Restart for 
+% [V,KLrot,KLidx,KR,LR] = CT_EK_IR_DS(V,KLrot,KLidx,KR,LR,mu)
+% -- Double Shift Core-Transformations Implicit Restart for 
 % Extended Krylov
 %
 % INPUT
@@ -20,14 +21,10 @@ function [V,KLrot,KLidx,KR,LR] = CT_EK_IR_DS(V,KLrot,KLidx,KR,LR,mu)
 % The recursion relation that holds before and after the restart is:
 %       A*V*K = V*L
 %
-%
 % daan.camps@cs.kuleuven.be
-% November 22, 2016
-
-% -------------------------------------------------------------------------
-% Main function
-% -------------------------------------------------------------------------
-
+% last edit: November 22, 2016
+%
+% See also: CT_EK, CT_EK_IR_SS
 	for kk = 1:size(mu,2)
 		n = size(KR,1);
         DescBranch = zeros(2,3);

@@ -4,20 +4,30 @@ function [ V, Hrot, Hrow, HR ] = CT_SK_BLK( mv, V, Hrot, Hrow, HR, bs, m )
 %
 % INPUT
 % mv    function that computes matvec product
-% V     existing Krylov basis
-% Hrot  existing rotations, ordered per rhomb
-% Hrow  keeps track of the row indices
-% HR    existing upper triangular
+% V     existing Krylov basis (N x (k+1)*bs)
+%	for initial run: V should contain bs orthonormal startvectors
+% Hrot  existing core transformations, stored per rhomb (2xbs^2xk)
+%	for initial run: Hrot is 2xbs^2x0 empty array
+% Hrow  keeps track of the row indices of the core transformations (1xbs^2xk)
+%	for initial run: Hrow is 1xbs^2x0 empty array
+% HR    existing upper triangular for banded upper Hessenberg ((k+1*bs x k*bs))
+%	for initial run: HR is bsx0 empty array
 % bs    blocksize
 % m     number of blocks to add to subspace
 %
 % OUTPUT
-% V     extended Krylov basis containing bs*m more vectors
-% Hrot  updated rotations ordered per rhomb
-% Hrow  updated row indices
-% HR    updated upper triangular
+% V     enlarged Krylov basis (N x (k+m+1)*bs)
+% Hrot  updated rotations stored per rhomb (2 x bs^2 x k+m)
+% Hrow  updated row indices (1 x bs^2 x k+m)
+% HR    updated upper triangular ((k+m+1)*bs x (k+m)*bs)
+%
+% The recurrence that holds throughout the algorithm is
+%	A * V(:,1:end-bs) = V * H
 %
 % daan.camps@cs.kuleuven.be
+% last edit: April 10, 2017
+%
+% See also: CT_SK_HESS_BLK, CT_SK_TO_EK_RIGHT_BLK
 
 % We store the rotations Hrot in a 2 x bs^2 x m array. Each slice stores a
 % rhomb such that from front to back the descending pattern forms.

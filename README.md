@@ -16,7 +16,7 @@ In this case the columns of V<sub>i+1</sub> span K<sup>ext</sup><sub>p,n</sub>(A
 The matrices K,L are still upper Hessenberg matrices, but they are no longer unreduced. An operation with A leads to a subdiagonal element in L, while an operation with A<sup>-1</sup> results in a subdiagonal element in K. As a consequence, the pattern of core transformations in the (L,K) pencil is condensed and an implicit QR step can be executed. Furthermore, because of this structure, the projection counterpart on the extended Krylov subspace is of *extended Hessenberg* format.
 
 ## Rational Krylov
-In the rational Krylov algorithm, a *rational operator* of the form S<sub>i</sub> = (a<sub>i</sub> A + b<sub>i</sub> I)<sup>-1</sup> (c<sup>i</sup> A + d<sup>i</sup> I) is used to expand the Krylov subspace. It is clear that standard and extended Krylov are a special case of the operator S<sub>i</sub>. The recurrence that holds throughout this algorithm is again:
+In the rational Krylov algorithm, a *rational operator* of the form S<sub>i</sub> = (a<sub>i</sub> A + b<sub>i</sub> I)<sup>-1</sup> (c<sub>i</sub> A + d<sub>i</sub> I) is used to expand the Krylov subspace. It is clear that standard and extended Krylov are a special case of the operator S<sub>i</sub>. The recurrence that holds throughout this algorithm is again:
 > A \* V<sub>i+1</sub> * K<sub>i</sub> = V<sub>i+1</sub> \* L<sub>i</sub>.
 
 This is similar to the extended Krylov recurrence with the important difference that, in general, the matrices K,L are unreduced upper Hessenberg matrices with the ratio of their subdiagonal elements l<sub>i+1,i</sub> / k<sub>i+1,i</sub> equal to -b<sub>i</sub> / a<sub>i</sub>. This ratio is also called the *i*th *pole*.
