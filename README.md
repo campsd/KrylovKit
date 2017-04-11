@@ -110,8 +110,8 @@ The result is:
 ![Ritz values extended Krylov via (L,K)][exmp1_ritz_EK_LK]
 ![Ritz values extended Krylov via PC][exmp1_ritz_EK_PC]
 
-[exmp1_ritz_SK]: /KrylovKit/images/example1/ritz_SK.svg?raw=true
-[exmp1_ritz_EK_LK]: /KrylovKit/images/example1/ritz_EK_LK.svg?raw=true
+[exmp1_ritz_SK]: /images/example1/ritz_SK.svg?raw=true
+[exmp1_ritz_EK_LK]: /images/example1/ritz_EK_LK.svg?raw=true
 [exmp1_ritz_EK_PC]: /images/example1/ritz_EK_PC.svg?raw=true
 
 We can make two observations:
