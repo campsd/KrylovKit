@@ -110,9 +110,9 @@ The result is:
 ![Ritz values extended Krylov via (L,K)][exmp1_ritz_EK_LK]
 ![Ritz values extended Krylov via PC][exmp1_ritz_EK_PC]
 
-[exmp1_ritz_SK]: /images/example1/ritz_SK.svg?raw=true
-[exmp1_ritz_EK_LK]: /images/example1/ritz_EK_LK.svg?raw=true
-[exmp1_ritz_EK_PC]: /images/example1/ritz_EK_PC.svg?raw=true
+[exmp1_ritz_SK]: /images/example1/ritz_SK.png?raw=true
+[exmp1_ritz_EK_LK]: /images/example1/ritz_EK_LK.png?raw=true
+[exmp1_ritz_EK_PC]: /images/example1/ritz_EK_PC.png?raw=true
 
 We can make two observations:
 1. The standard Krylov method approximates the outer eigevalues well, but doesn't find any interior eigenvalues. The extended Krylov method retrieves a lot of the interior eigenvalues and finds some that are located more to the outside of the spectrum.
