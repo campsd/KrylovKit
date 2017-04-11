@@ -20,7 +20,7 @@ function [ V, KLrot, KLidx, KR, LR ] = CT_SK_TO_EK_LEFT( V, Hrot, HR, s )
 %
 % OUTPUT
 % V     adjusted extended Krylov basis (N x m+1)
-% KLrot adjusted Core transformations L,K pencil (m)
+% KLrot adjusted Core transformations L,K pencil (2xm)
 % KLidx indicates side of core transformations
 %	(0 = K // 1 = L) (m)
 % KR    upper triangular Hessenberg K (m+1 x m)

@@ -16,10 +16,141 @@ In this case the columns of V<sub>i+1</sub> span K<sup>ext</sup><sub>p,n</sub>(A
 The matrices K,L are still upper Hessenberg matrices, but they are no longer unreduced. An operation with A leads to a subdiagonal element in L, while an operation with A<sup>-1</sup> results in a subdiagonal element in K. As a consequence, the pattern of core transformations in the (L,K) pencil is condensed and an implicit QR step can be executed. Furthermore, because of this structure, the projection counterpart on the extended Krylov subspace is of *extended Hessenberg* format.
 
 ## Rational Krylov
-In the rational Krylov algorithm, a *rational operator* of the form S<sub>i</sub> = (a<sub>i</sub> A + b<sub>i</sub> I)<sup>-1</sup> (c<sub>i</sub> A + d<sub>i</sub> I) is used to expand the Krylov subspace. It is clear that standard and extended Krylov are a special case of the operator S<sub>i</sub>. The recurrence that holds throughout this algorithm is again:
+In the rational Krylov algorithm, a *rational operator* of the form S<sub>i</sub> = (a<sub>i</sub> A + b<sub>i</sub> I)<sup>-1</sup> (c<sub>i</sub> A + d<sub>i</sub> I) is used to expand the Krylov subspace. It is clear that standard and extended Krylov both are a special case of the operator S<sub>i</sub>. The recurrence that holds throughout this algorithm is again:
 > A \* V<sub>i+1</sub> * K<sub>i</sub> = V<sub>i+1</sub> \* L<sub>i</sub>.
 
-This is similar to the extended Krylov recurrence with the important difference that, in general, the matrices K,L are unreduced upper Hessenberg matrices with the ratio of their subdiagonal elements l<sub>i+1,i</sub> / k<sub>i+1,i</sub> equal to -b<sub>i</sub> / a<sub>i</sub>. This ratio is also called the *i*th *pole*.
+This is similar to the extended Krylov recurrence with the important difference that, in general, the matrices K,L are unreduced upper Hessenberg matrices with the ratio of their subdiagonal elements l<sub>i+1,i</sub> / k<sub>i+1,i</sub> equal to -b<sub>i</sub> / a<sub>i</sub>. This ratio is also called the *i*th *pole* in the iteration.
+
+## Examples
+The following basic examples give some indication on the usage of the different functions.
+
+### 1. Extracting Ritz values from standard and extended Krylov subspaces
+In this example, we first generate a 1000 x 1000 random sparse matrix `A` and a constant, normalized vector `v` which is used as the start vector for the Krylov iterations. All the eigenvalues of `A` are computed as a reference:
+
+```matlab
+n = 1000;
+A = sprandn(n,n,0.05);
+v = ones(size(A,1),1); v = v/norm(v,2);
+eigA = eig(full(A));
+```
+
+Next, a function handle `mv` is defined which computes the matvec, we choose to compute `m=50` vectors with the standard Krylov algorithm and define the arrays `Vsk`, `Hrot` and `HR` for storing the factorized recurrence. The validity of the recurrence is checked, and Ritz values are computed as the eigenvalues of the top square part of the upper Hessenberg matrix:
+
+```matlab
+%% Standard Krylov
+mv = @(x) A*x;
+m = 50;
+Vsk = v;
+Hrot = zeros(2,0); HR = zeros(1,0); 
+[ Vsk, Hrot, HR ] = CT_SK( mv, Vsk, Hrot, HR, m );
+fprintf('Error on SK recursion:\n');
+H = CT_SK_HESS(Hrot,HR);
+recerr = norm(mv(Vsk(:,1:m)) - Vsk*H, 'fro')/norm(Vsk*H,'fro')
+ritzSK = eig(H(1:m,:));
+
+```
+
+The output is:
+> Error on SK recursion:
+> 
+> recerr =
+> 
+>    1.3233e-16
+ 
+We repeat the same procedure for the extended Krylov algorithm. Here we need an additional function handle `sysslv` that computes the negative powers of `A`, and choose a selection vector `s` of length `m`. The arrays `Vek`, `KLrot`, `KLidx`, `KR` and `LR` are used to store the recurrence. The validity of the recurrence is checked and Ritz values are computed in two different ways:
+1. As the solution of the small generalized eigenvalue problem `eig(L(1:m,:),K(1:m,:))`
+2. As the solution of the eigenvalue problem `eig(PC)`, where `PC` is the projected counterpart
+**Note:** the last operation should be a matvec (`s(m)=1`) for this Ritz procedure to work.
+
+```matlab
+%% Extended Krylov
+sysslv = @(x) A\x;
+s = zeros(m,1);
+s(1:7:50) = 1; %step 1, 8, 15, 22, 29, 36, 43, and 50 with mv
+Vek = v;
+KLrot = zeros(2,0); KLidx = zeros(1,0); KR = zeros(1,0); LR = zeros(1,0);
+[Vek,KLrot,KLidx,KR,LR] = CT_EK(mv,sysslv,Vek,KLrot,KLidx,KR,LR,s);
+fprintf('Error on EK recursion:\n');
+[K,L] = CT_EK_PENCIL(KLrot,KLidx,KR,LR);
+recerr = norm(mv(Vek)*K - Vek *L,'fro')/norm(Vek*L,'fro')
+ritzEK = eig(L(1:m,:),K(1:m,:));
+PC = CT_EK_PC(KLrot,KLidx,KR,LR,[]);
+ritzEK2 = eig(PC);
+```
+
+The output is:
+> Error on EK recursion:
+> 
+> recerr =
+> 
+>    6.2990e-15
+
+We now plot the three sets of Ritz values we have computed.
+
+```matlab
+%% Plot eigenvalue estimates
+figure(1); 
+plot(real(eigA),imag(eigA),'.'); hold on;
+plot(real(ritzSK),imag(ritzSK),'x','LineWidth',2);
+legend('eig A', 'ritz SK')
+figure(2);
+plot(real(eigA),imag(eigA),'.'); hold on;
+plot(real(ritzEK),imag(ritzEK),'x','LineWidth',2);
+legend('eig A', 'ritz EK (L,K)')
+figure(3);
+plot(real(eigA),imag(eigA),'.'); hold on;
+plot(real(ritzEK),imag(ritzEK),'x','LineWidth',2);
+legend('eig A', 'ritz EK (PC)')
+```
+
+The result is:
+![Ritz values standard Krylov][exmp1_ritz_SK]
+![Ritz values extended Krylov via (L,K)][exmp1_ritz_EK_LK]
+![Ritz values extended Krylov via PC][exmp1_ritz_EK_PC]
+
+[exmp1_ritz_SK]: https://github.com/campsd/KrylovKit/images/example1/ritz_SK.svg
+[exmp1_ritz_EK_LK]: https://github.com/campsd/KrylovKit/images/example1/ritz_EK_LK.svg
+[exmp1_ritz_EK_PC]: https://github.com/campsd/KrylovKit/images/example1/ritz_EK_PC.svg
+
+We can make two observations:
+1. The standard Krylov method approximates the outer eigevalues well, but doesn't find any interior eigenvalues. The extended Krylov method retrieves a lot of the interior eigenvalues and finds some that are located more to the outside of the spectrum.
+2. The two ways of extracting Ritz values from the extended Krylov method are equivalent.
+
+we conclude this example by plotting the structure that arises in the recurrence matrices:
+
+```matlab
+%% Plot matrix structure
+figure(4);
+imagesc(log10(abs(H)))
+axis square
+colorbar;
+title('log10 of entries H');
+figure(5);
+subplot(121)
+imagesc(log10(abs(K)))
+axis square
+colorbar;
+title('log10 of entries K');
+subplot(122)
+imagesc(log10(abs(L)))
+axis square
+colorbar;
+title('log10 of entries L');
+figure(6);
+imagesc(log10(abs(PC)))
+axis square
+colorbar;
+title('log10 of entries PC');
+```
+
+Which gives:
+![Matrix structure standard Krylov][exmp1_struct_SK]
+![Matrix structure extended Krylov (L,K)][exmp1_struct_EK_LK]
+![Matrix structure extended Krylov PC][exmp1_struct_EK_PC]
+
+[exmp1_struct_SK]: https://github.com/campsd/KrylovKit/images/example1/struct_SK_H.png
+[exmp1_struct_EK_LK]: https://github.com/campsd/KrylovKit/images/example1/struct_EK_LK.png
+[exmp1_struct_EK_PC]: https://github.com/campsd/KrylovKit/images/example1/struct_EK_PC.png
 
 ## List of abbreviations
 The funtion names make use of the following abbreviations in their naming convention:
