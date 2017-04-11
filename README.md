@@ -60,6 +60,7 @@ The output is:
 We repeat the same procedure for the extended Krylov algorithm. Here we need an additional function handle `sysslv` that computes the negative powers of `A`, and choose a selection vector `s` of length `m`. The arrays `Vek`, `KLrot`, `KLidx`, `KR` and `LR` are used to store the recurrence. The validity of the recurrence is checked and Ritz values are computed in two different ways:
 1. As the solution of the small generalized eigenvalue problem `eig(L(1:m,:),K(1:m,:))`
 2. As the solution of the eigenvalue problem `eig(PC)`, where `PC` is the projected counterpart
+
 **Note:** the last operation should be a matvec (`s(m)=1`) for this Ritz procedure to work.
 
 ```matlab
@@ -104,13 +105,14 @@ legend('eig A', 'ritz EK (PC)')
 ```
 
 The result is:
+
 ![Ritz values standard Krylov][exmp1_ritz_SK]
 ![Ritz values extended Krylov via (L,K)][exmp1_ritz_EK_LK]
 ![Ritz values extended Krylov via PC][exmp1_ritz_EK_PC]
 
-[exmp1_ritz_SK]: https://github.com/campsd/KrylovKit/images/example1/ritz_SK.svg
-[exmp1_ritz_EK_LK]: https://github.com/campsd/KrylovKit/images/example1/ritz_EK_LK.svg
-[exmp1_ritz_EK_PC]: https://github.com/campsd/KrylovKit/images/example1/ritz_EK_PC.svg
+[exmp1_ritz_SK]: /KrylovKit/images/example1/ritz_SK.svg?raw=true
+[exmp1_ritz_EK_LK]: /KrylovKit/images/example1/ritz_EK_LK.svg?raw=true
+[exmp1_ritz_EK_PC]: /images/example1/ritz_EK_PC.svg?raw=true
 
 We can make two observations:
 1. The standard Krylov method approximates the outer eigevalues well, but doesn't find any interior eigenvalues. The extended Krylov method retrieves a lot of the interior eigenvalues and finds some that are located more to the outside of the spectrum.
@@ -144,13 +146,14 @@ title('log10 of entries PC');
 ```
 
 Which gives:
+
 ![Matrix structure standard Krylov][exmp1_struct_SK]
 ![Matrix structure extended Krylov (L,K)][exmp1_struct_EK_LK]
 ![Matrix structure extended Krylov PC][exmp1_struct_EK_PC]
 
-[exmp1_struct_SK]: https://github.com/campsd/KrylovKit/images/example1/struct_SK_H.png
-[exmp1_struct_EK_LK]: https://github.com/campsd/KrylovKit/images/example1/struct_EK_LK.png
-[exmp1_struct_EK_PC]: https://github.com/campsd/KrylovKit/images/example1/struct_EK_PC.png
+[exmp1_struct_SK]: /images/example1/struct_SK_H.png?raw=true
+[exmp1_struct_EK_LK]: /images/example1/struct_EK_LK.png?raw=true
+[exmp1_struct_EK_PC]: /images/example1/struct_EK_PC.png?raw=true
 
 ## List of abbreviations
 The funtion names make use of the following abbreviations in their naming convention:
