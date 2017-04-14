@@ -1,9 +1,12 @@
 ***************************************************************************************************
-		KrylovKit - ToDo and Wishlist (Planning)
+		KrylovKit - ToDo list
 ***************************************************************************************************
 
 ToDo list
 ***************************************************************************************************
+April 14, 2017
+* Unit tests for all functions
+
 March 29, 2017
 * HESS and PENCIL functions: rewrite them s.t. the recurrence matrices can be consrtucted part by part
 * Enforce that single rotations are always 2x1, not 1x2
@@ -17,10 +20,9 @@ March 20, 2017:
 * Deflation in restart, multiple sweeps with same shift without reducing subspace
 
 November 16, 2016:
-* incorporate amd ordering
 * CTIF
 
-Wishlist (Planning)
+Functions
 ***************************************************************************************************
 
 Common
@@ -48,8 +50,8 @@ CT_SK_BLK		standard block-Krylov, banded		Finished
 CT_SK_IR_SS		single shift implicit restart		Finished (deflation)
 CT_SK_IR_DS		double shift implicit restart		Implementation ToDo
 CT_SK_IR_MS		multi-shift implicit restart		Implementation ToDo
-CT_SK_HESS		construct Hessenberg			Finished
-CT_SK_HESS_BLK		construct banded Hess from blk-Krylov	Finished
+CT_SK_HESS		construct Hessenberg			Finished			(improve by partially constructing the matrix)
+CT_SK_HESS_BLK		construct banded Hess from blk-Krylov	Finished			(improve by partially constructing the matrix)
 CT_IRSK			brings it together for SK		Implementation ToDo
 CT_SK_TO_EK_LEFT	converts SK to EK (via LEFT)		Finished
 CT_SK_TO_EK_RIGHT	converts SK to EK (via RIGHT)		Finished (Mach et al)
@@ -61,19 +63,21 @@ DNS_SK_BLK		dense standard block-Krylov		Finished
 
 Extended Krylov (EK)
 ---------------------------------------------------------------------------------------------------
-Function	Description				Status
+Function		Description				Status
 
-CT_EK		build extended Krylov			Finished (to check)
-CT_EK_IR_SS	single shift implicit restart		Finished (to check)
-CT_EK_IR_DS	double shift implicit restart		Finished (to check)		shift through R as nested func
-CT_EK_IR_MS	multi-shift implicit restart		Implementation ToDo
-CT_EK_PC	projected counterpart			Finished (to check)
-CT_EK_PENCIL	K,L pencil				Finished (to check)
-CT_IREK		brings it together for EK		Finished (to check)
-CT_EK_TO_SK	converts EK to SK			Implementation ToDo
-CT_EK_TO_RK	converts EK to RK			Theory ToDo
-CT_EK_TO_EK	changes selection vector
-DNS_EK		dense extended Krylov (not CTed)	Finished (to check)
+CT_EK			build extended Krylov			Finished (to check)
+CT_EK_IR_SS		single shift implicit restart		Finished (to check)
+CT_EK_IR_DS		double shift implicit restart		Finished (to check)		shift through R as nested func
+CT_EK_IR_MS		multi-shift implicit restart		Implementation ToDo
+CT_EK_PC		projected counterpart			Finished (to check)
+CT_EK_PENCIL		K,L pencil				Finished (to check)		(improve by partially constructing the pencil)
+CT_EK_PENCIL_BLK	K,L pencil block KrylovKit		Finished v1 			(improve by partially constructing the pencil)
+CT_IREK			brings it together for EK		Finished (to check)
+CT_EK_TO_SK		converts EK to SK			Implementation ToDo
+CT_EK_TO_RK		converts EK to RK			Theory ToDo
+CT_EK_TO_EK_LEFT	changes selection vector via LEFT	Finished
+CT_EK_TO_EK_RIGHT	changes selection vector via RIGHT	Finished
+DNS_EK			dense extended Krylov (not CTed)	Finished (to check)
 
 Rational Krylov (RK)
 ---------------------------------------------------------------------------------------------------
@@ -86,5 +90,3 @@ CT_RK_SSPD
 CT_RK_TO_EK
 CT_RK_TO_SK
 DNS_RK
-
-
