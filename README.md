@@ -118,7 +118,7 @@ We can make two observations:
 1. The standard Krylov method approximates the outer eigevalues well, but doesn't find any interior eigenvalues. The extended Krylov method retrieves a lot of the interior eigenvalues and finds some that are located more to the outside of the spectrum.
 2. The two ways of extracting Ritz values from the extended Krylov method are equivalent.
 
-we conclude this example by plotting the structure that arises in the recurrence matrices:
+We conclude this example by inspecting the structure that arises in the recurrence matrices:
 
 ```matlab
 %% Plot matrix structure

@@ -1,5 +1,5 @@
 function [ V, KLrot, KLidx, KR, LR, r, em ] = CT_SK_TO_EK_RIGHT( V, Hrot, HR, s )
-% [ V, KLrot, KLidx, KR, LR ] = CT_SK_TO_EK_RIGHT( V, Hrot, HR, s )
+% [ V, KLrot, KLidx, KR, LR, r, em ] = CT_SK_TO_EK_RIGHT( V, Hrot, HR, s )
 %   -- converts a standard Krylov recurrence to an extended Krylov
 %   recurrence via an initial removal from the right.
 %

@@ -5,6 +5,7 @@
 ToDo list
 ***************************************************************************************************
 March 29, 2017
+* HESS and PENCIL functions: rewrite them s.t. the recurrence matrices can be consrtucted part by part
 * Enforce that single rotations are always 2x1, not 1x2
 * Update naming to CT_....
 

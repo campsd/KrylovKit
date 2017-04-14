@@ -1,4 +1,4 @@
-function [G1,G2,G3]=CT_TURNOVER(H1,H2,H3,pos,tol)
+function [G1,G2,G3]=CT_TURNOVER(H1,H2,H3)
 % CT_TURNOVER  Performs the shift-through (turnover) operation, 
 % with some additional parameters
 %
