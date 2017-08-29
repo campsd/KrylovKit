@@ -1,5 +1,5 @@
 # NOTICE
-Development suspended for now, all software is available as is. Far frome everything is functional.
+Development suspended for now, all software is available as is. Not everything is functional.
 
 # KrylovKit
 This repository contains Matlab files to handle standard, extended and rational Krylov sequences by operating on QR factorized representations of the recurrence matrices. This representation allows for a straightforward transition between the three different types of Krylov recurrences and leads to a unified approach for the implicit restart of the iteration. Some code to handle block-Krylov iterations is also available.
