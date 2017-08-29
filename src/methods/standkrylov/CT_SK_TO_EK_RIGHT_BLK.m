@@ -39,7 +39,7 @@ function [ V, KLrot, KLrow, KLidx, KR, LR, F, E ] = CT_SK_TO_EK_RIGHT_BLK( V, Hr
 % daan.camps@cs.kuleuven.be
 % last edit: April 10, 2017
 %
-% See also: CT_SK_BLK, CT_EK_PENCIL_BLK, CT_SK_HESS_BLK
+% See also: CT_SK_BLK, CT_EK_PENCIL_BLK, CT_TO_DNS_SK_HESS_BLK
 m = size(Hrot,3); %nb of blocks
 CTSV = zeros(3,0);
 CTSW = zeros(3,0);

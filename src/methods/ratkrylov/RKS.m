@@ -1,6 +1,13 @@
 function [ V, K, L ] = RKS( A, B, funpos, funneg, V, K, L, Xi, T )
 %RKS - rational Krylov sequence alogorithm
 %   Detailed explanation goes here
+
+% TODO there is a problem in this implementation that leads to spurious
+% eigenvalues, compare with rat_krylov
+% non optimal continuation vector? no
+% normalize start vector
+% ANSWER: the problem appears to be if the matrix B appears in the
+% numerator! The gamma and delta parameters appear to influence the result
     k = length(Xi);
     start_idx = size(V,2);
     
@@ -33,7 +40,7 @@ function [ V, K, L ] = RKS( A, B, funpos, funneg, V, K, L, Xi, T )
                     w = w - hc*V(:,j);
             end
         end
-        h(curr_ip1) = norm(w,2);
+        h(curr_ip1) = norm(w,2); %TODO check for breakdown
         
         % (3) Update the recursion
         V(:,curr_ip1) = w/h(curr_ip1);

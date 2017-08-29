@@ -1,6 +1,21 @@
 function [ V, Hrot, Hrow, HR ] = CT_SK_BLK( mv, V, Hrot, Hrow, HR, bs, m )
-%[ V, Hrot, HR ] = CT_SK_BLK( mv, V, Hrot, HR, bs, m ) 
+%[ V, Hrot, Hrow, HR ] = CT_SK_BLK( mv, V, Hrot, Hrow, HR, bs, m ) 
 % -- Core transformed Standard block-Krylov
+%
+% This function implements the block Arnoldi iteration with two passes of
+% modified Gram-Schmidt in every step. The banded upper Hessenberg matrix
+% is conputed and updated in QR factorized format.
+%
+% The function can be called in two ways:
+% OPTION 1: [ V, Hrot, Hrow, HR ] = CT_SK_BLK( mv, V, bs, m ) -> m block
+% Arnoldi steps are computed with startblock V of blocksize bs, mv is a
+% function handle for the matvec. If the starting block is not orthonormal,
+% it is explicitly orthonormalized.
+%
+% OPTION 2: [ V, Hrot, Hrow, HR ] = CT_SK_BLK( mv, V, Hrot, Hrow, HR, bs, m )
+% -> an existing block Arnoldi iteration is expanded with m blocks.
+%
+% More details on input and output arguments:
 %
 % INPUT
 % mv    function that computes matvec product
@@ -25,27 +40,55 @@ function [ V, Hrot, Hrow, HR ] = CT_SK_BLK( mv, V, Hrot, Hrow, HR, bs, m )
 %	A * V(:,1:end-bs) = V * H
 %
 % daan.camps@cs.kuleuven.be
-% last edit: April 10, 2017
+% last edit: May 22, 2017
 %
-% See also: CT_SK_HESS_BLK, CT_SK_TO_EK_RIGHT_BLK
+% See also: CT_TO_DNS_SK_HESS_BLK, CT_SK_TO_EK_RIGHT_BLK, DNS_SK_BLK
 
 % We store the rotations Hrot in a 2 x bs^2 x m array. Each slice stores a
 % rhomb such that from front to back the descending pattern forms.
-    tol = 1e-14; %breakdown tolerance
+    
+    % input parsing
     start_idx = size(V,2);
-    assert(mod(start_idx,bs)==0,'incorrect blocksize');
-    start_blck = start_idx/bs;
-    
-    if start_idx == bs
-        assert(norm(V'*V - eye(bs),'fro')<1e-14,'starting block must be unitary');
+    if nargin == 4 %we expect mv, Vstart, bs, m
+        bs = Hrot; m = Hrow;
+        assert(start_idx==bs,'error: incorrect start block');
+        start_blck = 1;
+        if norm(V'*V - eye(bs),'fro')>1e-13
+            warning('starting block must be unitary, will be orthogonalized');
+            [V,~] = qr(V,0);
+        end
+        % check if steps need to be taken
+        if m == 0
+            return
+        end
+        % create arrays of appropriate size
+        V(end,bs*(m+1)) = 0;
+        HR = zeros(bs*(m+1), bs*m);
+        Hrot = zeros(2, bs^2, m);
+        Hrow = zeros(1, bs^2, m);
+    elseif nargin == 7 %default case
+        assert(rem(start_idx,bs)==0,'error: incorrect blocksize');
+        start_blck = start_idx/bs;
+        assert(size(HR,1)==start_idx,'error: dimension mismatch');
+        assert(size(HR,2)==start_idx-bs,'error: dimension mismatch');
+        assert(size(Hrot,2)==bs^2,'error: dimension mismatch');
+        assert(size(Hrot,3)==start_blck-1,'error: dimension mismatch');
+        assert(size(Hrow,2)==bs^2,'error: dimension mismatch');
+        assert(size(Hrow,3)==start_blck-1,'error: dimension mismatch');
+        % check if steps need to be taken
+        if m == 0
+            return
+        end
+        % zero padding arrays to appropriate size
+        V(end,start_idx + bs*m) = 0;
+        HR(start_idx + bs*m, start_idx + bs*(m-1)) = 0;
+        Hrot(end,end,start_blck+m-1) = 0;
+        Hrow(end,end,start_blck+m-1) = 0;
+    else
+        error('unsupported input specification');
     end
-    
-    % zero padding arrays to appropriate size
-    V = padarray( V, [0 bs*m], 0, 'post');
-    HR = padarray( HR, [bs*m bs*m], 0, 'post');
-    Hrot = padarray( Hrot, [0 0 m], 0, 'post');
-    Hrow = padarray( Hrow, [0 0 m], 0, 'post');
-    
+
+    tol = 1e-14; %breakdown tolerance  
     % main loop
     for i=1:m
        %matvecs
@@ -65,7 +108,12 @@ function [ V, Hrot, Hrow, HR ] = CT_SK_BLK( mv, V, Hrot, Hrow, HR, bs, m )
        % Check for breakdown
        if min(svd(Ht(end-bs+1:end,:))) < tol
            warning('breakdown of block-Krylov process, halted early');
-           % handle arrays TODO
+           % handle arrays
+           Hrot(:,:,start_blck+i-1:end) = [];
+           Hrow(:,:,start_blck+i-1:end) = [];
+           HR(:,start_idx + bs*(i-1):end) = [];
+           HR(start_idx + bs*i:end,:) = [];
+           V(:,start_idx + bs*i:end) = [];
            break
        end
        
@@ -95,6 +143,3 @@ function [ V, Hrot, Hrow, HR ] = CT_SK_BLK( mv, V, Hrot, Hrow, HR, bs, m )
        Hrow(:,:,start_blck + i-1) = RhombRow;
     end
 end
-
-
-    

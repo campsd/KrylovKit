@@ -4,6 +4,19 @@
 
 ToDo list
 ***************************************************************************************************
+July 6
+* Enforce zeros throughout applying rotations and transformations
+* In RK to EK: if there are already poles at zero or infty, it can fail...
+
+June 16
+* Check and fix bug with right generated core transformations in complex arithmetic -> [conj(cos) sin]
+
+May 4, 2017
+* Toolboxfree alternative for padarray -> see DNS_SK approach
+* Use CAPAC for Ritz values
+* Householder ipv MGS?
+* Double check that we have MGS instead of CGS !!
+
 April 14, 2017
 * Unit tests for all functions
 
